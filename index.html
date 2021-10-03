@@ -48,7 +48,7 @@
 
 
 <ul class="main-navigation">
-    <li><a href="">Blog</a></li>
+    <li><a href="https://www.kovlala.fun">Blog</a></li>
     <li><a href="/category/tech.html">Tech</a></li>
 </ul></nav>
   <div id="main">
@@ -57,7 +57,26 @@
   		<article>
 <header>
       <h1 class="entry-title">
-        <a href="./2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令行访问NAS中Samba共享文件夹</a>
+        <a href="./2021/06/How-to-Mount-VM-Qcow2-Disk-on-PVE-Host.html">PVE系统挂载VM镜像硬盘之qcow2格式</a>
+      </h1>
+    <p class="meta">
+<time datetime="2021-06-24T14:25:00+08:00" pubdate>周四 24 六月 2021</time>      
+    </p>
+</header>
+
+        <div class="entry-content"><p>PVE做为宿主机，安装了OpenMediaVault系统，分配宿主机硬盘作为OMV资源盘使用；由于硬件配置原因，准备升级平台，想通过宿主机挂载OMV镜像文件，直接备份数据，记录操作方式如下</p>
+<p>对于qcow2格式的镜像文件，需要使用 <strong>qemu-nbd</strong> 这个工具，通常PVE系统中这个工具会默认安装； 可通过以下命令检查；</p>
+<div class="highlight"><pre><span></span><code>$ qemu-nbd --version
+
+qemu-nbd <span class="m">5</span>.2.0 …</code></pre></div></div>
+            <footer>
+                <a rel="full-article" href="./2021/06/How-to-Mount-VM-Qcow2-Disk-on-PVE-Host.html">Read On &crarr;</a>
+            </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="./2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令访问NAS中Samba共享文件夹</a>
       </h1>
     <p class="meta">
 <time datetime="2021-06-13T18:25:00+08:00" pubdate>周日 13 六月 2021</time>      
@@ -86,18 +105,21 @@ $ apt-get install …</code></pre></div></div>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     <li class="post">
-        <a href="./2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令行访问NAS中Samba共享文件夹</a>
+        <a href="./2021/06/How-to-Mount-VM-Qcow2-Disk-on-PVE-Host.html">PVE系统挂载VM镜像硬盘之qcow2格式</a>
+    </li>
+    <li class="post">
+        <a href="./2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令访问NAS中Samba共享文件夹</a>
     </li>
   </ul>
 </section><section>
   <h1>Categories</h1>
     <ul id="recent_posts">
-      <li><a href="./category/tech.html">Tech (1)</a></li>
+      <li><a href="./category/tech.html">Tech (2)</a></li>
   </ul>
 </section>
 <section>
   <h1>Tags</h1>
-    <a href="./tag/linux.html">Linux</a>,    <a href="./tag/sambagong-xiang.html">Samba共享</a>,    <a href="./tag/ming-ling-xing.html">命令行</a></section>
+    <a href="./tag/pve.html">PVE</a>,    <a href="./tag/qemu-nbd.html">qemu-nbd</a>,    <a href="./tag/qcow2.html">Qcow2</a>,    <a href="./tag/ming-ling-xing.html">命令行</a>,    <a href="./tag/linux.html">Linux</a>,    <a href="./tag/sambagong-xiang.html">Samba共享</a></section>
     <section>
         <h1>Blogroll</h1>
         <ul>
