@@ -57,6 +57,30 @@
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="./2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
+      </h1>
+    <p class="meta">
+<time datetime="2021-07-28T14:25:00+08:00" pubdate>周三 28 七月 2021</time>      
+    </p>
+</header>
+
+        <div class="entry-content"><p>如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； </p>
+<p>配置文件如下：</p>
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
+
+<span class="na">Description</span><span class="o">=</span><span class="s">fraps service</span>
+
+<span class="na">After</span><span class="o">=</span><span class="s">network.target syslog.target</span>
+
+<span class="na">Wants</span><span class="o">=</span><span class="s">network.target</span>
+<span class="na">WantedBy …</span></code></pre></div></div>
+            <footer>
+                <a rel="full-article" href="./2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">Read On &crarr;</a>
+            </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="./2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html">Rsync替代CP实现高效文件复制</a>
       </h1>
     <p class="meta">
@@ -149,6 +173,9 @@ $ apt-get install …</code></pre></div></div>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     <li class="post">
+        <a href="./2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
+    </li>
+    <li class="post">
         <a href="./2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html">Rsync替代CP实现高效文件复制</a>
     </li>
     <li class="post">
@@ -164,12 +191,12 @@ $ apt-get install …</code></pre></div></div>
 </section><section>
   <h1>Categories</h1>
     <ul id="recent_posts">
-      <li><a href="./category/tech.html">Tech (4)</a></li>
+      <li><a href="./category/tech.html">Tech (5)</a></li>
   </ul>
 </section>
 <section>
   <h1>Tags</h1>
-    <a href="./tag/rsync.html">rsync</a>,    <a href="./tag/pve.html">PVE</a>,    <a href="./tag/qemu-nbd.html">qemu-nbd</a>,    <a href="./tag/qcow2.html">Qcow2</a>,    <a href="./tag/ming-ling-xing.html">命令行</a>,    <a href="./tag/iperf3.html">Iperf3</a>,    <a href="./tag/linuxce-su.html">Linux测速</a>,    <a href="./tag/linux.html">Linux</a>,    <a href="./tag/sambagong-xiang.html">Samba共享</a></section>
+    <a href="./tag/frp.html">FRP</a>,    <a href="./tag/fu-wu-qi.html">服务器</a>,    <a href="./tag/linux.html">Linux</a>,    <a href="./tag/rsync.html">rsync</a>,    <a href="./tag/pve.html">PVE</a>,    <a href="./tag/qemu-nbd.html">qemu-nbd</a>,    <a href="./tag/qcow2.html">Qcow2</a>,    <a href="./tag/ming-ling-xing.html">命令行</a>,    <a href="./tag/iperf3.html">Iperf3</a>,    <a href="./tag/linuxce-su.html">Linux测速</a>,    <a href="./tag/sambagong-xiang.html">Samba共享</a></section>
     <section>
         <h1>Blogroll</h1>
         <ul>

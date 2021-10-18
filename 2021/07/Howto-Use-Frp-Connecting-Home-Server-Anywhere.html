@@ -4,19 +4,19 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Rsync替代CP实现高效文件复制 &mdash; 自在工坊</title>
+  <title>使用FRP连接家中服务器 &mdash; 自在工坊</title>
   <meta name="author" content="工长">
 
-  <link rel="canonical" href="../../2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html"/>
+  <link rel="canonical" href="../../2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html"/>
   
   <meta property="og:site_name" content="自在工坊" />
   <meta property="og:type" content="article" />
     
-  <meta property="og:title" content="Rsync替代CP实现高效文件复制" />
-  <meta property="og:url" content="../../2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html" />
-  <meta property="og:description" content="Linux系统下常用数据文件/目录内容同步命令rsync，常用方式如下 $ rsync -avz --progress /sourcefolder /targetfolder $ rsync -avz --progress /sourcefolder/ /targetfolder 参数选项 关闭 -z 选项，不使用压缩；-z参数仅对传输过程中压缩网络流量有用，会消耗CPU资源 …" />
-  <meta property="article:published_time" content="2021-07-24 14:25:00+08:00" />
-  <meta property="article:modified_time" content="2021-07-24 14:25:00+08:00" />
+  <meta property="og:title" content="使用FRP连接家中服务器" />
+  <meta property="og:url" content="../../2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" />
+  <meta property="og:description" content="如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； 配置文件如下： [Unit] Description=fraps service After=network.target syslog.target Wants=network.target WantedBy …" />
+  <meta property="article:published_time" content="2021-07-28 14:25:00+08:00" />
+  <meta property="article:modified_time" content="2021-07-28 14:25:00+08:00" />
 
 
 
@@ -64,52 +64,56 @@
 <div>
   <article class="hentry" role="article">
 <header>
-      <h1 class="entry-title">Rsync替代CP实现高效文件复制</h1>
+      <h1 class="entry-title">使用FRP连接家中服务器</h1>
     <p class="meta">
-<time datetime="2021-07-24T14:25:00+08:00" pubdate>周六 24 七月 2021</time>      
+<time datetime="2021-07-28T14:25:00+08:00" pubdate>周三 28 七月 2021</time>      
     </p>
 </header>
 
-    <div class="entry-content"><p>Linux系统下常用数据文件/目录内容同步命令rsync，常用方式如下</p>
-<div class="highlight"><pre><span></span><code>$ rsync -avz --progress /sourcefolder /targetfolder
-$ rsync -avz --progress /sourcefolder/ /targetfolder
+    <div class="entry-content"><p>如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； </p>
+<p>配置文件如下：</p>
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
+
+<span class="na">Description</span><span class="o">=</span><span class="s">fraps service</span>
+
+<span class="na">After</span><span class="o">=</span><span class="s">network.target syslog.target</span>
+
+<span class="na">Wants</span><span class="o">=</span><span class="s">network.target</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
 </code></pre></div>
 
-<p>参数选项</p>
-<ul>
-<li>关闭 -z 选项，不使用压缩；-z参数仅对传输过程中压缩网络流量有用，会消耗CPU资源。</li>
-<li>使用 -W 选项，整个复制文件，禁用增量/差异比较；当文件时间/大小不同时，rsync将比较差异并且仅更新更改文件。</li>
-</ul>
-<div class="highlight"><pre><span></span><code>$ rsync -avW --progress /sourcefolder /targetfolder
+<p>服务器端配置如下：</p>
+<div class="highlight"><pre><span></span><code><span class="k">[Service]</span>
+
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+
+<span class="c1">#启动服务的命令（此处为frps的实际安装目录）</span>
+
+<span class="na">$ ExecStart</span><span class="o">=</span><span class="s">/yourpath/frps -c /yourpath/frps.ini</span>
 </code></pre></div>
 
-<p>以上rsync执行速度与常用cp速度基本一致。</p>
-<p>其它参数设置</p>
-<ul>
-<li>--no-compress 有可能会加快传输速度</li>
-<li>--dry-run 模拟运行结果，验证命令是否正确</li>
-<li>-A，X，E涵盖了-a未涵盖的扩展属性和权限</li>
-<li>-l 代表软链接</li>
-<li>-H 代表硬链接</li>
-<li>-h 代表人类可读</li>
-<li>-S 处理稀疏文件 -如果您没有稀疏文件，则不会受到伤害</li>
-<li>--exclude-from 排除可能不需要的文件，减少传输时间，但此参数并不会增加传输速度</li>
-<li>-S/ --sparse，将空序列变为稀疏块</li>
-<li>--partial/-P 是--partial --progress：保存任何部分传输的文件以供将来恢复</li>
-<li>--no-whole-file 需要重新发送的文件内容，都会使用增量传输，读取部分内容通常比全部快</li>
-<li>--inplace 避免文件复制（但前提是在整个传输完成之前没有任何内容读取目标）</li>
-<li>--remove-source-files 同步完成后删除源文件</li>
-</ul>
-<p>输出发送到文件中，命令格式如下：</p>
-<div class="highlight"><pre><span></span><code>$ rsync -a /sourcefolder /targetfolder <span class="m">1</span>&gt;/rsync.out <span class="m">2</span>&gt;/rsync.err 
+<p>Client端同理，按以上方式改写，客户端配置如下：</p>
+<div class="highlight"><pre><span></span><code>ExecStart=/yourpath/frp_0.37.0_linux_amd64/frps -c /yourpath/frp_0.37.0_linux_amd64/frps.ini
 </code></pre></div>
 
-<ul>
-<li>1&gt;将内容输出rsync.out文件</li>
-<li>2&gt;将错误消息输出rsync.err文件</li>
-</ul>
-<p>结合以上参数，优化后的rsync命令如下：</p>
-<div class="highlight"><pre><span></span><code>rsync -avAXEWSlHh /sourcefolder /targetfolder --no-compress --info=progress2 --dry-run
+<p>启动方式一：nohup</p>
+<div class="highlight"><pre><span></span><code># server startup frps:
+
+$ ./home/william/frp_0.37.0_linux_amd64/frps
+或
+$ nohup ./frps -c ./frps.ini &amp;
+
+# client startup frpc:
+$ ./frpc -c ./frpc.ini
+或
+$ nohup ./frpc -c ./frpc.ini &amp;
+
+nohup /yourpath/frp_0.37.0_linux_amd64/frpc -c /yourpath/frp_0.37.0_linux_amd64/frpc.ini &amp;
+</code></pre></div>
+
+<p>启动方式二：Debian系列中，可使用systemctl控制启动</p>
+<div class="highlight"><pre><span></span><code>debian9中:
+$ sudo vim /lib/systemd/system/frps.service
 </code></pre></div>
 
 <p><img alt="Pelican Image" src="../images/pelican1.jpg"></p></div>
@@ -120,11 +124,11 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
         工长
     </span>
   </span>
-<time datetime="2021-07-24T14:25:00+08:00" pubdate>周六 24 七月 2021</time>  <span class="categories">
+<time datetime="2021-07-28T14:25:00+08:00" pubdate>周三 28 七月 2021</time>  <span class="categories">
     <a class='category' href='../../category/tech.html'>Tech</a>
   </span>
   <span class="categories">
-    <a class="category" href="../../tag/rsync.html">rsync</a>  </span>
+    <a class="category" href="../../tag/frp.html">FRP</a>,    <a class="category" href="../../tag/fu-wu-qi.html">服务器</a>,    <a class="category" href="../../tag/linux.html">Linux</a>  </span>
 </p><div class="sharing">
 </div>    </footer>
   </article>
