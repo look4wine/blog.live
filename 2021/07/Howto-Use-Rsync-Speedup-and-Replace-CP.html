@@ -88,6 +88,7 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 <ul>
 <li>--no-compress 有可能会加快传输速度</li>
 <li>--dry-run 模拟运行结果，验证命令是否正确</li>
+<li>--remove-source-files 在rsync命令的发送方删除作为传输一部分并已在接收方成功复制的文件</li>
 <li>-A，X，E涵盖了-a未涵盖的扩展属性和权限</li>
 <li>-l 代表软链接</li>
 <li>-H 代表硬链接</li>
@@ -98,7 +99,7 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 <li>--partial/-P 是--partial --progress：保存任何部分传输的文件以供将来恢复</li>
 <li>--no-whole-file 需要重新发送的文件内容，都会使用增量传输，读取部分内容通常比全部快</li>
 <li>--inplace 避免文件复制（但前提是在整个传输完成之前没有任何内容读取目标）</li>
-<li>--remove-source-files 同步完成后删除源文件</li>
+<li>--delete 在rsync命令的接收方，即从目标目录中删除无关的文件；注意与--remove-source-files区别</li>
 </ul>
 <p>输出发送到文件中，命令格式如下：</p>
 <div class="highlight"><pre><span></span><code>$ rsync -a /sourcefolder /targetfolder <span class="m">1</span>&gt;/rsync.out <span class="m">2</span>&gt;/rsync.err 
@@ -110,6 +111,11 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 </ul>
 <p>结合以上参数，优化后的rsync命令如下：</p>
 <div class="highlight"><pre><span></span><code>rsync -avAXEWSlHh /sourcefolder /targetfolder --no-compress --info=progress2 --dry-run
+</code></pre></div>
+
+<p>远程同步
+除本地两个目录间数据同步外，rsync使用更多的场景为远程目录间进行同步，可将本地内容同步到指定IP的远程目录下，反之亦然；ssh协议下命令格式如下：</p>
+<div class="highlight"><pre><span></span><code>$ rsync -avW --progress /sourcefolder user@remote_host_ip:/targetfolder
 </code></pre></div>
 
 <p><img alt="Pelican Image" src="../images/pelican1.jpg"></p></div>
