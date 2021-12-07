@@ -14,9 +14,9 @@
     
   <meta property="og:title" content="使用FRP连接家中服务器" />
   <meta property="og:url" content="../../2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" />
-  <meta property="og:description" content="如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； 配置文件如下： [Unit] Description=fraps service After=network.target syslog.target Wants=network.target WantedBy …" />
+  <meta property="og:description" content="如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； 普通安装方式配置文件如下： [Unit] Description=fraps service After=network.target syslog.target Wants=network.target WantedBy …" />
   <meta property="article:published_time" content="2021-07-28 14:25:00+08:00" />
-  <meta property="article:modified_time" content="2021-07-28 14:25:00+08:00" />
+  <meta property="article:modified_time" content="2021-12-06 14:25:00+08:00" />
 
 
 
@@ -71,7 +71,7 @@
 </header>
 
     <div class="entry-content"><p>如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； </p>
-<p>配置文件如下：</p>
+<h2>普通安装方式配置文件如下：</h2>
 <div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
 
 <span class="na">Description</span><span class="o">=</span><span class="s">fraps service</span>
@@ -83,17 +83,37 @@
 </code></pre></div>
 
 <p>服务器端配置如下：</p>
-<div class="highlight"><pre><span></span><code><span class="k">[Service]</span>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
 
-<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<span class="o">[</span><span class="n">Service</span><span class="o">]</span><span class="w"></span>
 
-<span class="c1">#启动服务的命令（此处为frps的实际安装目录）</span>
+<span class="n">Type</span><span class="o">=</span><span class="n">simple</span><span class="w"></span>
 
-<span class="na">$ ExecStart</span><span class="o">=</span><span class="s">/yourpath/frps -c /yourpath/frps.ini</span>
+<span class="o">[</span><span class="n">common</span><span class="o">]</span><span class="w"></span>
+<span class="n">bind_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端通信端口号</span><span class="w"></span>
+<span class="n">vhost_http_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8081</span><span class="w"></span>
+<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">可理解为密码</span><span class="w"></span>
+
+<span class="n">#启动服务的命令</span><span class="err">（</span><span class="n">此处为frps的实际安装目录</span><span class="err">）</span><span class="w"></span>
+
+<span class="err">$</span><span class="w"> </span><span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
 </code></pre></div>
 
 <p>Client端同理，按以上方式改写，客户端配置如下：</p>
-<div class="highlight"><pre><span></span><code>ExecStart=/yourpath/frp_0.37.0_linux_amd64/frps -c /yourpath/frp_0.37.0_linux_amd64/frps.ini
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frpc</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
+
+<span class="o">[</span><span class="n">common</span><span class="o">]</span><span class="w"></span>
+<span class="n">server_addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">105.113.21.123</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">服务端VPS的IP地址</span><span class="err">，</span><span class="n">请根据实际情况修改</span><span class="w"></span>
+<span class="n">server_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w">　</span><span class="err">＃</span><span class="w">　</span><span class="n">客户端与服务端通信端口号</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span><span class="w"></span>
+<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span><span class="w"></span>
+
+<span class="o">[</span><span class="n">ssh</span><span class="o">]</span><span class="w"></span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tcp</span><span class="w"></span>
+<span class="n">local_ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">127.0.0.1</span><span class="w"></span>
+<span class="n">local_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">22</span><span class="w"></span>
+<span class="n">remote_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端接掌ssh请求的端口号</span><span class="err">，</span><span class="n">确保开启防火墙</span><span class="err">，</span><span class="n">允许使用此端口号</span><span class="w"></span>
+
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
 </code></pre></div>
 
 <p>启动方式一：nohup</p>
@@ -116,6 +136,31 @@ nohup /yourpath/frp_0.37.0_linux_amd64/frpc -c /yourpath/frp_0.37.0_linux_amd64/
 $ sudo vim /lib/systemd/system/frps.service
 </code></pre></div>
 
+<h2>Docker安装方式操作如下：</h2>
+<p>首先在服务器，客户端分别安装Docker，安装完成后参照以下方式部署Docker Image</p>
+<p>服务器端Docker</p>
+<div class="highlight"><pre><span></span><code># docker pull snowdreamtech/frps
+# docker run --restart=always --network host -d -v /etc/frp/frps.ini:/etc/frp/frps.ini --name frps snowdreamtech/frps
+
+# /etc/frp/frps.ini # 为本机服务端配置文件
+# :/etc/frp/frps.ini # 为Docker实体中文件位置
+
+# docker ps # 查看运行状态，显示类似以下
+
+CONTAINER ID   IMAGE                COMMAND                  CREATED        STATUS PORTS  NAMES
+0ccff988564b   snowdreamtech/frps   &quot;/bin/sh -c &#39;/usr/bi…&quot;   13 hours ago   Up 13 hours   frpc
+</code></pre></div>
+
+<p>客户端Docker</p>
+<div class="highlight"><pre><span></span><code># docker pull snowdreamtech/frpc
+# docker run --restart=always --network host -d -v /etc/frp/frpc.ini:/etc/frp/frpc.ini --name frpc snowdreamtech/frpc
+
+# /etc/frp/frps.ini # 为本机客户端配置文件
+# :/etc/frp/frps.ini # 为Docker实体中文件位置
+</code></pre></div>
+
+<p>正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
+Docker方式可与普通方式共同使用，服务不受影响。</p>
 <p><img alt="Pelican Image" src="../images/pelican1.jpg"></p></div>
     <footer>
 <p class="meta">
