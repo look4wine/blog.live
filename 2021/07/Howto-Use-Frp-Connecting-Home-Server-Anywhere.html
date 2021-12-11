@@ -161,6 +161,21 @@ CONTAINER ID   IMAGE                COMMAND                  CREATED        STAT
 
 <p>正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
 Docker方式可与普通方式共同使用，服务不受影响。</p>
+<p>Errors:</p>
+<p>远程登录时反馈错误信息如下：</p>
+<div class="highlight"><pre><span></span><code>Bad ssh config on remote server. Cannot login in
+/etc/ssh/ssh_config: line 55: Bad configuration option: permitrootlogin
+/etc/ssh/ssh_config: terminating, 1 bad configuration options
+</code></pre></div>
+
+<p>To resolve this issue we have to commented out line 55 in /etc/ssh/ssh_config, which is # #PermitRootLogin yes
+服务器端ssh设置错误，屏蔽PermitRootLogin yes行,root可登录设置应在/etc/ssh/sshd_config设置中进行。 
+PermitRootLogin is actually an option which is valid in the /etc/ssh/sshd_config file; not the ssh_config file. The difference is that the sshd_config file controls the SSH server and the ssh_config file controls the client. Therefore, it would indeed be a bad (invalid) config option in the client settings file.</p>
+<p>Links:
+https://hub.docker.com/r/snowdreamtech/frpc
+https://hub.docker.com/r/fatedier/frp
+https://www.jianshu.com/p/1272fbbecfeb
+https://serverfault.com/questions/785290/bad-ssh-config-on-remote-server-cannot-login-in</p>
 <p><img alt="Pelican Image" src="../images/pelican1.jpg"></p></div>
     <footer>
 <p class="meta">
@@ -185,6 +200,9 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     <li class="post">
+        <a href="../../2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+    </li>
+    <li class="post">
         <a href="../../2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
     </li>
     <li class="post">
@@ -196,19 +214,16 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
     <li class="post">
         <a href="../../2021/06/Howto-Use-Iperf3-Testing-Network-Performance.html">内网测速工具Iperf3使用记录</a>
     </li>
-    <li class="post">
-        <a href="../../2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令访问NAS中Samba共享文件夹</a>
-    </li>
   </ul>
 </section><section>
   <h1>Categories</h1>
     <ul id="recent_posts">
-      <li><a href="../../category/tech.html">Tech (5)</a></li>
+      <li><a href="../../category/tech.html">Tech (6)</a></li>
   </ul>
 </section>
 <section>
   <h1>Tags</h1>
-    <a href="../../tag/frp.html">FRP</a>,    <a href="../../tag/fu-wu-qi.html">服务器</a>,    <a href="../../tag/linux.html">Linux</a>,    <a href="../../tag/rsync.html">rsync</a>,    <a href="../../tag/pve.html">PVE</a>,    <a href="../../tag/qemu-nbd.html">qemu-nbd</a>,    <a href="../../tag/qcow2.html">Qcow2</a>,    <a href="../../tag/ming-ling-xing.html">命令行</a>,    <a href="../../tag/iperf3.html">Iperf3</a>,    <a href="../../tag/linuxce-su.html">Linux测速</a>,    <a href="../../tag/sambagong-xiang.html">Samba共享</a></section>
+    <a href="../../tag/bigdata.html">Bigdata</a>,    <a href="../../tag/ambari.html">Ambari</a>,    <a href="../../tag/frp.html">FRP</a>,    <a href="../../tag/fu-wu-qi.html">服务器</a>,    <a href="../../tag/linux.html">Linux</a>,    <a href="../../tag/rsync.html">rsync</a>,    <a href="../../tag/pve.html">PVE</a>,    <a href="../../tag/qemu-nbd.html">qemu-nbd</a>,    <a href="../../tag/qcow2.html">Qcow2</a>,    <a href="../../tag/ming-ling-xing.html">命令行</a>,    <a href="../../tag/iperf3.html">Iperf3</a>,    <a href="../../tag/linuxce-su.html">Linux测速</a>,    <a href="../../tag/sambagong-xiang.html">Samba共享</a></section>
     <section>
         <h1>Blogroll</h1>
         <ul>
