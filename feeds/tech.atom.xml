@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>自在工坊 - Tech</title><link href="/" rel="alternate"></link><link href="/feeds/tech.atom.xml" rel="self"></link><id>/</id><updated>2021-12-10T19:30:00+08:00</updated><subtitle>走在代码边缘</subtitle><subtitle>走在代码边缘</subtitle><entry><title>Apache Ambari 2.7.6 源码编译安装记录</title><link href="/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html" rel="alternate"></link><published>2021-12-09T14:25:00+08:00</published><updated>2021-12-10T19:30:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-12-09:/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html</id><summary type="html">&lt;p&gt;BigData Testing Environment based on Apache Ambari 2.7.6 Source Code, build &amp;amp; install on CentOS7 and record details and …&lt;/p&gt;</summary><content type="html">&lt;p&gt;BigData Testing Environment based on Apache Ambari 2.7.6 Source Code, build &amp;amp; install on CentOS7 and record details and errors as follow.&lt;/p&gt;
+&lt;p&gt;Ambari是 Apache软件基金会的一个顶级项目，截止2021年12月份最新的发布版本是 2.7.6。Ambari工具的主要作用是用于大数据环境下，创建、管理、监视 Hadoop 集群。这里的 Hadoop 指广义上Hadoop 整个生态圈(例如 Hive，Hbase，Sqoop，Zookeeper 等)，而并不仅是特指 Hadoop工具本身。简而言之 Ambari 就是为了让 Hadoop 以及相关的大数据工具安装与管理更加容易而使用的一个工具。&lt;/p&gt;
+&lt;p&gt;大数据测试环境建立，使用Apache Ambari 2.7.6版本编译并安装，记录操作过程与问题如下。
+通过PVE的LCT容器模拟集群，建立CentOS7系统，资源分配为1G Memory, 100G Harddisk
+- Master
+- Slave1
+- Slave2&lt;/p&gt;
+&lt;h2&gt;Step1: Install prerequirements on Master system&lt;/h2&gt;
+&lt;p&gt;安装以下工具，，国内使用可更新为国内源，提高下载速度。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;wget&lt;/li&gt;
+&lt;li&gt;curl&lt;/li&gt;
+&lt;li&gt;npm&lt;/li&gt;
+&lt;li&gt;rpmbuild (rpm-build package)&lt;/li&gt;
+&lt;li&gt;g++ (gcc-c++ package)&lt;/li&gt;
+&lt;li&gt;git&lt;/li&gt;
+&lt;li&gt;python-devel&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ yum install -y wget, curl
+$ yum install -y rpm-build
+$ yum install -y gcc-c++
+$ yum install -y git python-devel rpm-build gcc-c++
+$ yum install -y npm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Step2: Update Maven and edit Maven config with two mirrors for repository&lt;/h2&gt;
+&lt;p&gt;Maven升级， Centos7默认安装为3.0版本，Ambari2.7编译需要3.3.9版本以下，升级Maven&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ yum install maven &lt;span class="c1"&gt;# 安装默认版本&lt;/span&gt;
+$ yum erase maven &lt;span class="c1"&gt;# 删除已安装版本&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;下载Maven，修改系统设置&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+$ tar -xvf  apache-maven-3.3.9-bin.tar.gz
+$ mv -f apache-maven-3.3.9 /usr/local/
+
+&lt;span class="c1"&gt;# 编辑/etc/profile文件，在文件末尾添加如下代码：&lt;/span&gt;
+
+$ vi /etc/profile
+$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;MAVEN_HOME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/usr/local/apache-maven-3.3.9 &lt;span class="c1"&gt;# maven 目录&lt;/span&gt;
+$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;:&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;MAVEN_HOME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/bin
+$ &lt;span class="nb"&gt;source&lt;/span&gt; /etc/profile &lt;span class="c1"&gt;# 设置生效&lt;/span&gt;
+$ mvn -v
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;将Maven中config设置修改为以下，提升各类包下载速度；镜像1中心源，镜像2为中心以外的其它Package下载；
+正常科学上网的环境下，整个安装过程中全部第三方Package均可正常下载。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;settings&amp;gt;&lt;/span&gt;
+  &lt;span class="nt"&gt;&amp;lt;mirrors&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;id&amp;gt;&lt;/span&gt;huaweicloud&lt;span class="nt"&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central&lt;span class="nt"&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;url&amp;gt;&lt;/span&gt;https://mirrors.huaweicloud.com/repository/maven/&lt;span class="nt"&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
+
+    &lt;span class="nt"&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;id&amp;gt;&lt;/span&gt;nexus-hortonworks&lt;span class="nt"&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;*,!central&lt;span class="nt"&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Nexus hortonworks&lt;span class="nt"&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;url&amp;gt;&lt;/span&gt;https://repo.hortonworks.com/content/groups/public/&lt;span class="nt"&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
+  &lt;span class="nt"&gt;&amp;lt;/mirrors&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/settings&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Step3: Download Ambari-2.7.6&lt;/h2&gt;
+&lt;p&gt;下载Ambari-2.7.6版本，准备编译工作&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ wget https://www-eu.apache.org/dist/ambari/ambari-2.7.6/apache-ambari-2.7.6-src.tar.gz 
+$ tar xfvz apache-ambari-2.7.6-src.tar.gz 
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; apache-ambari-2.7.6-src
+$ mvn versions:set -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0
+$ &lt;span class="nb"&gt;pushd&lt;/span&gt; ambari-metrics
+$ mvn versions:set -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0
+$ &lt;span class="nb"&gt;popd&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Step4: Building Source on RHEL (CentOS 7) &amp;amp; SUSE (SLES 12 SP2 &amp;amp; SP3):&lt;/h2&gt;
+&lt;p&gt;通过以下几条命令进行编译，注意不同参数的使用&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;clean # 重新编译过程，可不加此参数，提升速度&lt;/li&gt;
+&lt;li&gt;-Drat.skip=true # 跳过Licence检测&lt;/li&gt;
+&lt;li&gt;-X # 显示编译过程上的详细信息&lt;/li&gt;
+&lt;li&gt;-rf :ambari-metrics-timelineservice # 指定从ambari-metrics-timelineservice开始编译，之前编译完成的保留&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mvn -B clean install rpm:rpm -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt;
+或
+$ mvn -B clean install rpm:rpm -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt; -Drat.skip&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt; -X
+或
+$ mvn -B install rpm:rpm -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt; -Drat.skip&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt; -X
+
+&lt;span class="c1"&gt;# 编译中断后，再次编译&lt;/span&gt;
+$ mvn -B install rpm:rpm -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt; -Drat.skip&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt; -rf :ambari-metrics-timelineservice
+或
+$ mvn -B install rpm:rpm -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt; -Drat.skip&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt; -rf :ambari-metrics-grafana
+
+&lt;span class="c1"&gt;# 如Maven的mirros做了切换，每次切换镜像要先执行以下，清除文件； 另外，每次编译，先删除以下文件，再重新编译   &lt;/span&gt;
+$ find ~/.m2/repository/ -name &lt;span class="s2"&gt;&amp;quot;*.lastUpdated&amp;quot;&lt;/span&gt; -exec rm -rf &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt; &lt;span class="c1"&gt;# 清理lastUpdated文件&lt;/span&gt;
+$ find ~/.m2/repository/ -name &lt;span class="s2"&gt;&amp;quot;*.lock&amp;quot;&lt;/span&gt; -exec rm -rf &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;        &lt;span class="c1"&gt;# # 清理lock文件&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Building on Debian， 以下是Debian系统中的编译命令，仅文件格式不同； &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mvn -B install jdeb:jdeb -DnewVersion&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.7.6.0.0 -DbuildNumber&lt;span class="o"&gt;=&lt;/span&gt;388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;python &amp;gt;= 2.6&amp;quot;&lt;/span&gt; -Drat.skip&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt; -X
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;Step5: Fix Error and Rebuild&lt;/h1&gt;
+&lt;p&gt;编译过程中会出现以下问题，处理后重新编译&lt;/p&gt;
+&lt;p&gt;可用以下命令，检查依赖关系：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mvn dependency:resolve
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h5&gt;Error:&lt;/h5&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Failed to execute goal com.github.eirslett:frontend-maven-plugin:1.4:yarn (yarn install) on project am          bari-admin: Failed to run task: &amp;#39;yarn install --ignore-engines --pure-lockfile&amp;#39; failed. org.apache.commons.exe          c.ExecuteException: Process exited with an error: 1 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Maven源问题，按Step2内容处理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5&gt;Error:&lt;/h5&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Failed to execute goal org.apache.rat:apache-rat-plugin:0.12:check (default) on project ambari: Too many files with unapproved license:
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Licence Checking问题， 编译中增加 -Drat.skip=true 参数 ，跳过licensing 检查&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Error：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Download&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Ambari&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Grafana&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Getting&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;dl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;oss&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;release&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;6.7.4&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;amd64&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tar&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gz&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;To&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;2.7.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tgz&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;Not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;modified&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;downloaded&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;untar&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Expanding&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;2.7.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tgz&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;into&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;2.7.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;网络问题，可手机下载对应的工具包，保存在对应的位置； 可调整网络，重新编译&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5&gt;Error:&lt;/h5&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Failed&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;execute&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;goal&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;org&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;maven&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nl"&gt;plugins&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;maven&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;antrun&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nl"&gt;plugin&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;1.7&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;project&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nl"&gt;grafana&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;An&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Ant&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;BuildException&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;has&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;occured&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;expanding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;2.7.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tgz&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;java&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nl"&gt;EOFException&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Unexpected&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ZLIB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;input&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;stream&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;around&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Ant&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;part&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;untar&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana/grafana.tgz&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dest&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;compression&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;gzip&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;/&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;...&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;231&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;apache&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;2.7.6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;grafana&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;antrun&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Download&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Ambari&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Grafana&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;xml&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Help 1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;网络问题，重新编译&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Step6: Building Success and Display as follows&lt;/h2&gt;
+&lt;p&gt;编译成功后，显示如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[INFO] Ambari Metrics Grafana 2.7.6.0.0 ................... SUCCESS [ 13.037 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Metrics Host Aggregator 2.7.6.0.0 ........... SUCCESS [ 21.074 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Metrics Assembly 2.7.6.0.0 .................. SUCCESS [02:50 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Service Advisor 1.0.0.0-SNAPSHOT ............ SUCCESS [  1.452 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Server 2.7.6.0.0 ............................ SUCCESS [07:34 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Functional Tests 2.7.6.0.0 .................. SUCCESS [  6.812 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Agent 2.7.6.0.0 ............................. SUCCESS [02:00 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] ambari-logsearch 2.7.6.0.0 ......................... SUCCESS [  0.962 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Appender 2.7.6.0.0 ................ SUCCESS [  3.850 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Config Api 2.7.6.0.0 .............. SUCCESS [  0.667 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Config JSON 2.7.6.0.0 ............. SUCCESS [  0.521 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Config Solr 2.7.6.0.0 ............. SUCCESS [ 10.829 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Config Zookeeper 2.7.6.0.0 ........ SUCCESS [  1.431 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Config Local 2.7.6.0.0 ............ SUCCESS [  0.498 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Log Feeder Plugin Api 2.7.6.0.0 ... SUCCESS [  4.807 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Log Feeder Container Registry 2.7.6.0.0 SUCCESS [  6.833 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Log Feeder 2.7.6.0.0 .............. SUCCESS [ 46.136 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Web 2.7.6.0.0 ..................... SUCCESS [03:52 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Server 2.7.6.0.0 .................. SUCCESS [02:49 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Assembly 2.7.6.0.0 ................ SUCCESS [  1.554 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Logsearch Integration Test 2.7.6.0.0 ........ SUCCESS [01:42 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] ambari-infra 2.7.6.0.0 ............................. SUCCESS [  0.493 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Infra Solr Client 2.7.6.0.0 ................. SUCCESS [ 10.080 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Infra Solr Plugin 2.7.6.0.0 ................. SUCCESS [ 10.115 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Infra Manager 2.7.6.0.0 ..................... SUCCESS [01:15 min]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Infra Assembly 2.7.6.0.0 .................... SUCCESS [  1.000 s]&lt;/span&gt;
+&lt;span class="k"&gt;[INFO] Ambari Infra Manager Integration Tests 2.7.6.0.0 ... SUCCESS [ 41.036 s]&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] ------------------------------------------------------------------------&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] BUILD SUCCESS&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] ------------------------------------------------------------------------&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] Total time:  25:10 min&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] Finished at: 2021-12-09T17:08:51Z&lt;/span&gt;
+&lt;span class="na"&gt;[INFO] ------------------------------------------------------------------------&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Step7: Install Ambari rpm package just compiled.&lt;/h2&gt;
+&lt;p&gt;编译成功，rpm文件保存以下位置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ &lt;span class="c1"&gt;# 服务端文件&lt;/span&gt;
+$ apache-ambari-2.7.6-src/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-2.7.6.0-0.x86_64.rpm
+$ &lt;span class="c1"&gt;# 客户端文件&lt;/span&gt;
+$ apache-ambari-2.7.6-src/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-2.7.6.0-0.x86_64.rpm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;进入服务端文件目录，安装rpm文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ yun install -y ambari-server-2.7.6.0-0.x86_64.rpm
+$ &lt;span class="c1"&gt;# 安装完成后，查看版本信息&lt;/span&gt;
+$ ambari-server --version
+$ &lt;span class="m"&gt;2&lt;/span&gt;.7.6.0-0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;安装Mysql5.7版本，用于保存ambari设置信息&lt;/p&gt;
+&lt;p&gt;添加供ambari使用的用户名、密码、数据库名等信息，开通对应权限；
+Mysql默认密码设置为1或2，ambari不支持复杂密码，可通过以下命令修改Mysql密码要求&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;alter user &amp;#39;root&amp;#39;@&amp;#39;localhost&amp;#39; identified by &amp;#39;new password&amp;#39;;
+set global validate_password_policy=0; # 复杂度，0为8位数字
+set global validate_password_length=4; # 默认长度，可设置为4位
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;安装ambari库文件，建立各类表&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mysql&amp;gt;source /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;设置ambari-server，大部分均可选择默认项，java可按提示安装oracle版本，数据库部分选Mysql即可；&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ ambari-server &lt;span class="nv"&gt;setup&lt;/span&gt;
+
+&lt;span class="o"&gt;==============================================================================&lt;/span&gt;
+Choose one of the following options:
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - PostgreSQL &lt;span class="o"&gt;(&lt;/span&gt;Embedded&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - Oracle
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - MySQL / MariaDB
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - PostgreSQL
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - Microsoft SQL Server &lt;span class="o"&gt;(&lt;/span&gt;Tech Preview&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - SQL Anywhere
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; - &lt;span class="nv"&gt;BDB&lt;/span&gt;
+&lt;span class="o"&gt;==============================================================================&lt;/span&gt;
+Enter choice &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="m"&gt;3&lt;/span&gt;
+Hostname &lt;span class="o"&gt;(&lt;/span&gt;localhost&lt;span class="o"&gt;)&lt;/span&gt;: 
+Port &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3306&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;:
+Database name &lt;span class="o"&gt;(&lt;/span&gt;ambari&lt;span class="o"&gt;)&lt;/span&gt;:
+Username &lt;span class="o"&gt;(&lt;/span&gt;ambari&lt;span class="o"&gt;)&lt;/span&gt;:
+Enter Database Password &lt;span class="o"&gt;(&lt;/span&gt;bigdata&lt;span class="o"&gt;)&lt;/span&gt;:bigdata911 &lt;span class="c1"&gt;# 与实际Mysql中用户名，密码一致&lt;/span&gt;
+Configuring ambari database...
+Enter full path to custom jdbc driver:
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;启动服务端，如启动失败，可通过Log日志查看具体问题，通常为数据库问题&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ ambari-server start
+$ cat /var/log/ambari-server/ambari-server.log
+$ ambari-server setup --jdbc-db&lt;span class="o"&gt;=&lt;/span&gt;mysql--jdbc-driver&lt;span class="o"&gt;=&lt;/span&gt;/usr/share/java/mysql-connector-java-5.1.47.jar &lt;span class="c1"&gt;# 设置jdbc的jar包位置&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h5&gt;Error:&lt;/h5&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;WARNING&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Before&lt;/span&gt; &lt;span class="n"&gt;starting&lt;/span&gt; &lt;span class="n"&gt;Ambari&lt;/span&gt; &lt;span class="n"&gt;Server&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;must&lt;/span&gt; &lt;span class="n"&gt;run&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;following&lt;/span&gt; &lt;span class="n"&gt;DDL&lt;/span&gt; &lt;span class="n"&gt;directly&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt; &lt;span class="n"&gt;shell&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;create&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;schema&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; 
+&lt;span class="sr"&gt;/var/lib/ambari-server/resources/&lt;/span&gt;&lt;span class="n"&gt;Ambari&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;DDL&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;MySQL&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;CREATE&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;sql&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;没建表，按指定文件建表&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mysql&amp;gt;source /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Step8: Finished Ambari Server Setup and Login&lt;/h2&gt;
+&lt;p&gt;安装完成，通过Brower访问，默认登录用户名与密码为：admin/admin&lt;/p&gt;
+&lt;p&gt;http:ipaddress:8080&lt;/p&gt;
+&lt;p&gt;整个安装过程并不复杂，主要问题集中在以下两点，根据提示耐心处理，均可解决
+- 网络问题，稳定的科学上网是基本条件； 编译失败后再多试几次基本都可解决
+- 依赖包问题，按第一步中设置；同时设置maven的Mirror&lt;/p&gt;
+&lt;h2&gt;Links:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://cwiki.apache.org/confluence/display/AMBARI/Installation+Guide+for+Ambari+2.7.6" target="_blank"&gt;https://cwiki.apache.org/confluence/display/AMBARI/Installation+Guide+for+Ambari+2.7.6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link&lt;/em&gt; &lt;a href="https://www.runoob.com/maven/maven-setup.html" target="_blank"&gt;https://www.runoob.com/maven/maven-setup.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://blog.csdn.net/m0_38028800/article/details/99939167" target="_blank"&gt;https://blog.csdn.net/m0_38028800/article/details/99939167&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://cwiki.apache.org/confluence/display/AMBARI/Ambari+Development" target="_blank"&gt;https://cwiki.apache.org/confluence/display/AMBARI/Ambari+Development&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://phantomjs.org/download.html" target="_blank"&gt;https://phantomjs.org/download.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;================================&lt;/p&gt;
+&lt;p&gt;宿主机
+CPU：755
+Memory：8G 
+OS: PVE6.1
+VPS：LXC CentOS7&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="Bigdata"></category><category term="Ambari"></category></entry><entry><title>Python Pelican加Github组合，超简单的博客平台</title><link href="/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html" rel="alternate"></link><published>2021-08-22T14:25:00+08:00</published><updated>2021-09-15T19:30:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-08-22:/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html</id><summary type="html">&lt;p&gt;Pelican Blog工具特点，静态页面生成速度快，维护简单；
+下载最新版 Pelican &lt;a href="https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip" target="_blank"&gt;https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip&lt;/a&gt;. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 
+安装方式参见文档 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Pelican Blog工具特点，静态页面生成速度快，维护简单；
+下载最新版 Pelican &lt;a href="https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip" target="_blank"&gt;https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip&lt;/a&gt;. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 
+安装方式参见文档：&lt;a href="https://docs.getpelican.com/en/latest/" target="_blank"&gt;https://docs.getpelican.com/en/latest/&lt;/a&gt;. &lt;/p&gt;
+&lt;h2&gt;Pelican简单设置&lt;/h2&gt;
+&lt;p&gt;Article与Page区别
+Article：Blog内容，指具体写五Blog文章内容
+Page：通常指固定不变的内容页面，比较个人说明内容； &lt;/p&gt;
+&lt;p&gt;元数据：
+指用于定义博客，进行搜索引擎优化的设置，如Blog的基本信息。
+可用Markdown语言来编辑Blog内容，格式如下：
+多个标签或作者，可以用逗号做分割
+多个作者使用authers 
+仅一个作者使用auther
+modified值是最后编辑文章的时间，默认和date相同。可以通过modified进行RSS推送，可在刚写文章的时候RSS已经推送了一遍，后来进行了修改，就可以通过modified进行再次推送。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; 
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2021&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;07&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt; &lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;
+&lt;span class="n"&gt;Modified&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;2021&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;07&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt; &lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;30&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Tech&lt;/span&gt;
+&lt;span class="n"&gt;Tags&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Python&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="n"&gt;Blog&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;
+&lt;span class="n"&gt;Slug&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Howto&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;supet&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;blog&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Python&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;and&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Github&lt;/span&gt;
+&lt;span class="n"&gt;Author&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="err"&gt;工长&lt;/span&gt;
+
+&lt;span class="n"&gt;Blog的Article页面内容部分&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;页面
+在content下面创建了目录pages，该目录下所有的文件都将被生成静态页面，比如About和Contact页面。&lt;/p&gt;
+&lt;p&gt;可以通过设置DISPLAY_PAGES_ON_MENU来控制页面是否在导航栏显示，默认情况是True&lt;/p&gt;
+&lt;p&gt;如果希望页面不在导航条上显示，可以在页面的元数据里面添加：status: hidden属性，例如对于404页面设置为不可见，因为404静态页面通常是不希望在导航条上面显示的。&lt;/p&gt;
+&lt;p&gt;引用内部Article的链接
+可以通过content的目录结构在不同的文章之间进行链接，现实文章的引用操作。
+引用content里面的内容语法是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;{filename}path/to/file # {fielname}是必填内容，可以同时支持Linux和windows
+markdonw格式下样例如下：
+
+[a link relative to the current file]({filename}category/article1.rst)
+[a link relative to the content root]({filename}/category/article1.rst)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;链接静态文件
+需要引用到的静态资源，比如图片，PDF文件等，需要在pelicanconf.py中配置STATIC_PATHS属性，Pelican默认设置content下的images为图片资源，其他的资源需要进行配置。
+创建Article页面时，Pelican会将图片复制到output/images/目录下，将pdf复制到output/pdfs/目录下，同时将链接适配到Article文件中&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;STATIC_PATHS = [&amp;#39;images&amp;#39;, &amp;#39;pdfs&amp;#39;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;发布草稿
+对部分Article希望作为草稿先发布出来看下效果，不让Article在首页和分类列表里面显示出来，可以在文章中添加Status: draft属性。修改文章的配置为Status: published将文章正式发布出来。&lt;/p&gt;
+&lt;p&gt;如果将所有刚写好的文章都作为草搞件发布的话，可以在配置文件中配置DEFAULT_METADATA
+属性&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;DEFAULT_METADATA = {
+        &amp;#39;status&amp;#39;: &amp;#39;draft&amp;#39;,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;文章在发布的时候默认均为草稿，通过修改文章的配置为Status: published将文章正式发布。&lt;/p&gt;
+&lt;h2&gt;Pelican Blog 内容自动发布Github&lt;/h2&gt;
+&lt;p&gt;Github上发布，后续维护成本可忽略不计；个人建立的VPS中发布，如仅针对一人Blog，显然成本占用的维护精力比较大，综合考虑通过Github发布是最优选择。&lt;/p&gt;
+&lt;p&gt;建立两个repo
+1 私有repo，用于保存每次新添加的源文件
+2 公有repo，对外提供内容的publish服务，可绑定域名对接访问；
+3 私有repo中建立Action，通过Push触发，将指定内容复制到公有repo中，完成自动发布；&lt;/p&gt;
+&lt;p&gt;本机新加入或编辑Article/Post的内容后，通过使用git发布：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ pelican content &lt;span class="c1"&gt;# 更新content内容&lt;/span&gt;
+$ git add . &lt;span class="c1"&gt;# git添加&lt;/span&gt;
+$ git commit -am &lt;span class="s1"&gt;&amp;#39;update&amp;#39;&lt;/span&gt;   &lt;span class="c1"&gt;# 加入注释内容&lt;/span&gt;
+$ git push  &lt;span class="c1"&gt;# 向私有repo中Push更新的内容&lt;/span&gt;
+$ 根据系统提示，录入key完成更新
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;自动发布，通过Action自动完成从内容源与发布版本的文件传输，约3-5分钟后线上内容完成更新，以下样例工作正常，可根据实际变化调整；&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# This is a basic workflow to help you get started with Actions
+
+name: CI-Publish Blog
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called &amp;quot;build&amp;quot;
+  # Secodn job called &amp;quot;publish&amp;quot;
+  publish: 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        submodules: true
+    #- name: Set up Python
+    #  uses: actions/setup-python@v1
+    #  with:
+    #    python-version: &amp;#39;3.8&amp;#39;
+    #- name: Insall dependencies
+    #  run: pip install -r requirements.txt
+
+    - name: Pushes to another repository
+      uses: cpina/github-action-push-to-another-repository@main # 关键点，自用Github提供的大牛们写好的Action
+      env:
+        API_TOKEN_GITHUB: &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;secrets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;API_TOKEN_GITHUB&lt;/span&gt; &lt;span class="cp"&gt;}&lt;/span&gt;} # API_TOKEN_GITHUB, 在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用
+      with:
+        source-directory: &amp;#39;output&amp;#39;
+        destination-github-username: &amp;#39;guthub name XXXXXXX&amp;#39; # github用户名
+        destination-repository-name: &amp;#39;namen of repository for publlish&amp;#39; # 目标Repo，即对外发布用的Repo
+        user-email: XXXXXXXX@XXXXXXXX # github email
+        commit-message: Post
+        target-branch: master   
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;output目录下加入CNAME文件，内容为定制化的域名(Custom Domain)，否则每次push后，会修改为Github repo默认的URL进行访问。&lt;/p&gt;
+&lt;h2&gt;Links:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://github.com/look4wine/pelican-octopress-theme" target="_blank"&gt;https://github.com/look4wine/pelican-octopress-theme&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://github.com/getpelican/pelican" target="_blank"&gt;https://github.com/getpelican/pelican&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Ref Link:&lt;/em&gt; &lt;a href="https://github.com/getpelican/pelican-themes" target="_blank"&gt;https://github.com/getpelican/pelican-themes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><category term="Tech"></category><category term="Python"></category><category term="Blog"></category></entry><entry><title>使用FRP连接家中服务器</title><link href="/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" rel="alternate"></link><published>2021-07-28T14:25:00+08:00</published><updated>2021-12-06T14:25:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-07-28:/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html</id><summary type="html">&lt;p&gt;如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； &lt;/p&gt;
+&lt;h2&gt;普通安装方式配置文件如下：&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;fraps service&lt;/span&gt;
+
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target syslog.target&lt;/span&gt;
+
+&lt;span class="na"&gt;Wants&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy …&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； &lt;/p&gt;
+&lt;h2&gt;普通安装方式配置文件如下：&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;fraps service&lt;/span&gt;
+
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target syslog.target&lt;/span&gt;
+
+&lt;span class="na"&gt;Wants&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;服务器端配置如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;frps&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Service&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;Type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;simple&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;common&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;bind_port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;客户端与服务端通信端口号&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;vhost_http_port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8081&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;XXXXXXXX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;客户端与服务端对接授权码&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;可理解为密码&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;#启动服务的命令&lt;/span&gt;&lt;span class="err"&gt;（&lt;/span&gt;&lt;span class="n"&gt;此处为frps的实际安装目录&lt;/span&gt;&lt;span class="err"&gt;）&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;yourpath&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frps&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;yourpath&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frps&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Client端同理，按以上方式改写，客户端配置如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;frpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;common&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;server_addr&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;105.113.21.123&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;服务端VPS的IP地址&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;请根据实际情况修改&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;server_port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7000&lt;/span&gt;&lt;span class="w"&gt;　&lt;/span&gt;&lt;span class="err"&gt;＃&lt;/span&gt;&lt;span class="w"&gt;　&lt;/span&gt;&lt;span class="n"&gt;客户端与服务端通信端口号&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;与frps&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini中设置保持一致&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;XXXXXXXX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;客户端与服务端对接授权码&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;与frps&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini中设置保持一致&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ssh&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;tcp&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;local_ip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;127.0.0.1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;local_port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;remote_port&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;6000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;客户端接掌ssh请求的端口号&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;确保开启防火墙&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="n"&gt;允许使用此端口号&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;yourpath&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frp_0&lt;/span&gt;&lt;span class="mf"&gt;.37.0&lt;/span&gt;&lt;span class="n"&gt;_linux_amd64&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frps&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;yourpath&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frp_0&lt;/span&gt;&lt;span class="mf"&gt;.37.0&lt;/span&gt;&lt;span class="n"&gt;_linux_amd64&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;frps&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ini&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;启动方式一：nohup&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# server startup frps:
+
+$ ./home/william/frp_0.37.0_linux_amd64/frps
+或
+$ nohup ./frps -c ./frps.ini &amp;amp;
+
+# client startup frpc:
+$ ./frpc -c ./frpc.ini
+或
+$ nohup ./frpc -c ./frpc.ini &amp;amp;
+
+nohup /yourpath/frp_0.37.0_linux_amd64/frpc -c /yourpath/frp_0.37.0_linux_amd64/frpc.ini &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;启动方式二：Debian系列中，可使用systemctl控制启动&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;debian9中:
+$ sudo vim /lib/systemd/system/frps.service
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Docker安装方式操作如下：&lt;/h2&gt;
+&lt;p&gt;首先在服务器，客户端分别安装Docker，安装完成后参照以下方式部署Docker Image&lt;/p&gt;
+&lt;p&gt;服务器端Docker&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# docker pull snowdreamtech/frps
+# docker run --restart=always --network host -d -v /etc/frp/frps.ini:/etc/frp/frps.ini --name frps snowdreamtech/frps
+
+# /etc/frp/frps.ini # 为本机服务端配置文件
+# :/etc/frp/frps.ini # 为Docker实体中文件位置
+
+# docker ps # 查看运行状态，显示类似以下
+
+CONTAINER ID   IMAGE                COMMAND                  CREATED        STATUS PORTS  NAMES
+0ccff988564b   snowdreamtech/frps   &amp;quot;/bin/sh -c &amp;#39;/usr/bi…&amp;quot;   13 hours ago   Up 13 hours   frpc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;客户端Docker&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;# docker pull snowdreamtech/frpc
+# docker run --restart=always --network host -d -v /etc/frp/frpc.ini:/etc/frp/frpc.ini --name frpc snowdreamtech/frpc
+
+# /etc/frp/frps.ini # 为本机客户端配置文件
+# :/etc/frp/frps.ini # 为Docker实体中文件位置
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
+Docker方式可与普通方式共同使用，服务不受影响。&lt;/p&gt;
+&lt;p&gt;Errors:&lt;/p&gt;
+&lt;p&gt;远程登录时反馈错误信息如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Bad ssh config on remote server. Cannot login in
+/etc/ssh/ssh_config: line 55: Bad configuration option: permitrootlogin
+/etc/ssh/ssh_config: terminating, 1 bad configuration options
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To resolve this issue we have to commented out line 55 in /etc/ssh/ssh_config, which is # #PermitRootLogin yes
+服务器端ssh设置错误，屏蔽PermitRootLogin yes行,root可登录设置应在/etc/ssh/sshd_config设置中进行。 
+PermitRootLogin is actually an option which is valid in the /etc/ssh/sshd_config file; not the ssh_config file. The difference is that the sshd_config file controls the SSH server and the ssh_config file controls the client. Therefore, it would indeed be a bad (invalid) config option in the client settings file.&lt;/p&gt;
+&lt;p&gt;Links:
+https://hub.docker.com/r/snowdreamtech/frpc
+https://hub.docker.com/r/fatedier/frp
+https://www.jianshu.com/p/1272fbbecfeb
+https://serverfault.com/questions/785290/bad-ssh-config-on-remote-server-cannot-login-in&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="FRP"></category><category term="服务器"></category><category term="Linux"></category></entry><entry><title>Rsync替代CP实现高效文件复制</title><link href="/2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html" rel="alternate"></link><published>2021-07-24T14:25:00+08:00</published><updated>2021-07-24T14:25:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-07-24:/2021/07/Howto-Use-Rsync-Speedup-and-Replace-CP.html</id><summary type="html">&lt;p&gt;Linux系统下常用数据文件/目录内容同步命令rsync，常用方式如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ rsync -avz --progress /sourcefolder /targetfolder
+$ rsync -avz --progress /sourcefolder/ /targetfolder
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;参数选项&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;关闭 -z 选项，不使用压缩；-z参数仅对传输过程中压缩网络流量有用，会消耗CPU资源 …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;Linux系统下常用数据文件/目录内容同步命令rsync，常用方式如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ rsync -avz --progress /sourcefolder /targetfolder
+$ rsync -avz --progress /sourcefolder/ /targetfolder
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;参数选项&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;关闭 -z 选项，不使用压缩；-z参数仅对传输过程中压缩网络流量有用，会消耗CPU资源。&lt;/li&gt;
+&lt;li&gt;使用 -W 选项，整个复制文件，禁用增量/差异比较；当文件时间/大小不同时，rsync将比较差异并且仅更新更改文件。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ rsync -avW --progress /sourcefolder /targetfolder
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;以上rsync执行速度与常用cp速度基本一致。&lt;/p&gt;
+&lt;p&gt;其它参数设置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;--no-compress 有可能会加快传输速度&lt;/li&gt;
+&lt;li&gt;--dry-run 模拟运行结果，验证命令是否正确&lt;/li&gt;
+&lt;li&gt;--remove-source-files 在rsync命令的发送方删除作为传输一部分并已在接收方成功复制的文件&lt;/li&gt;
+&lt;li&gt;-A，X，E涵盖了-a未涵盖的扩展属性和权限&lt;/li&gt;
+&lt;li&gt;-l 代表软链接&lt;/li&gt;
+&lt;li&gt;-H 代表硬链接&lt;/li&gt;
+&lt;li&gt;-h 代表人类可读&lt;/li&gt;
+&lt;li&gt;-S 处理稀疏文件 -如果您没有稀疏文件，则不会受到伤害&lt;/li&gt;
+&lt;li&gt;--exclude-from 排除可能不需要的文件，减少传输时间，但此参数并不会增加传输速度&lt;/li&gt;
+&lt;li&gt;-S/ --sparse，将空序列变为稀疏块&lt;/li&gt;
+&lt;li&gt;--partial/-P 是--partial --progress：保存任何部分传输的文件以供将来恢复&lt;/li&gt;
+&lt;li&gt;--no-whole-file 需要重新发送的文件内容，都会使用增量传输，读取部分内容通常比全部快&lt;/li&gt;
+&lt;li&gt;--inplace 避免文件复制（但前提是在整个传输完成之前没有任何内容读取目标）&lt;/li&gt;
+&lt;li&gt;--delete 在rsync命令的接收方，即从目标目录中删除无关的文件；注意与--remove-source-files区别&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;输出发送到文件中，命令格式如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ rsync -a /sourcefolder /targetfolder &lt;span class="m"&gt;1&lt;/span&gt;&amp;gt;/rsync.out &lt;span class="m"&gt;2&lt;/span&gt;&amp;gt;/rsync.err 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;1&amp;gt;将内容输出rsync.out文件&lt;/li&gt;
+&lt;li&gt;2&amp;gt;将错误消息输出rsync.err文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结合以上参数，优化后的rsync命令如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;rsync -avAXEWSlHh /sourcefolder /targetfolder --no-compress --info=progress2 --dry-run
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;远程同步
+除本地两个目录间数据同步外，rsync使用更多的场景为远程目录间进行同步，可将本地内容同步到指定IP的远程目录下，反之亦然；ssh协议下命令格式如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ rsync -avW --progress /sourcefolder user@remote_host_ip:/targetfolder
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="rsync"></category></entry><entry><title></title><link href="/2021/07/Howto-use-google-analytics-with-Python-Pelican.html" rel="alternate"></link><published>2021-07-12T14:25:00+08:00</published><updated>2021-07-15T19:30:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-07-12:/2021/07/Howto-use-google-analytics-with-Python-Pelican.html</id><summary type="html">&lt;p&gt;基于 Pelican 生成的Article静态页面，可以使用 Google Analytics 统计页面访问数据，可按以下步骤操作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;登录到 Google Analytics，创建账号并取得GA的Tracking ID&lt;/li&gt;
+&lt;li&gt;将获取到的 Tracking ID，添加到 publishconf.py 里 …&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;基于 Pelican 生成的Article静态页面，可以使用 Google Analytics 统计页面访问数据，可按以下步骤操作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;登录到 Google Analytics，创建账号并取得GA的Tracking ID&lt;/li&gt;
+&lt;li&gt;将获取到的 Tracking ID，添加到 publishconf.py 里： GOOGLE_ANALYTICS = '2865CXXXXX'&lt;/li&gt;
+&lt;li&gt;pelican 重新编译，并发布。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如Pelican Theme无法解析GA，可修改Theme中base.html文件，添加以下内容&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;设置完成，更新线上Pelican的Article，约1小时后可登录GA后台查看结果。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="GA"></category><category term="Analytics"></category></entry><entry><title>PVE系统挂载VM镜像硬盘之qcow2格式</title><link href="/2021/06/How-to-Mount-VM-Qcow2-Disk-on-PVE-Host.html" rel="alternate"></link><published>2021-06-24T14:25:00+08:00</published><updated>2021-06-24T14:25:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-06-24:/2021/06/How-to-Mount-VM-Qcow2-Disk-on-PVE-Host.html</id><summary type="html">&lt;p&gt;PVE做为宿主机，安装了OpenMediaVault系统，分配宿主机硬盘作为OMV资源盘使用；由于硬件配置原因，准备升级平台，想通过宿主机挂载OMV镜像文件，直接备份数据，记录操作方式如下&lt;/p&gt;
+&lt;p&gt;对于qcow2格式的镜像文件，需要使用 &lt;strong&gt;qemu-nbd&lt;/strong&gt; 这个工具，通常PVE系统中这个工具会默认安装； 可通过以下命令检查；&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ qemu-nbd --version
+
+qemu-nbd &lt;span class="m"&gt;5&lt;/span&gt;.2.0 …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;PVE做为宿主机，安装了OpenMediaVault系统，分配宿主机硬盘作为OMV资源盘使用；由于硬件配置原因，准备升级平台，想通过宿主机挂载OMV镜像文件，直接备份数据，记录操作方式如下&lt;/p&gt;
+&lt;p&gt;对于qcow2格式的镜像文件，需要使用 &lt;strong&gt;qemu-nbd&lt;/strong&gt; 这个工具，通常PVE系统中这个工具会默认安装； 可通过以下命令检查；&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ qemu-nbd --version
+
+qemu-nbd &lt;span class="m"&gt;5&lt;/span&gt;.2.0 &lt;span class="o"&gt;(&lt;/span&gt;pve-qemu-kvm_5.2.0&lt;span class="o"&gt;)&lt;/span&gt;
+Written by Anthony Liguori.
+
+Copyright &lt;span class="o"&gt;(&lt;/span&gt;c&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;2003&lt;/span&gt;-2020 Fabrice Bellard and the QEMU Project developers
+This is free software&lt;span class="p"&gt;;&lt;/span&gt; see the &lt;span class="nb"&gt;source&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; copying conditions.  There is NO
+warranty&lt;span class="p"&gt;;&lt;/span&gt; not even &lt;span class="k"&gt;for&lt;/span&gt; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如qemu-nbd命令无效，可通过以下方式安装&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装软件包 qemu-utils；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ apt-get update
+$ apt-get install qemu-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;开启 nbd&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ modprobe nbd &lt;span class="nv"&gt;max_part&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;在宿主系统中首先挂载虚拟机所在磁盘分区，挂载后可定位到镜像文件对应的qcow2文件所在目录，如本例中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mount /dev/sdd1 /media/folderd
+$ ls /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;连接VM中的镜像qcow2文件到nbdX，可通过fdisk -l 查询结果&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ ls /dev/nbd*
+
+/dev/nbd0   /dev/nbd11  /dev/nbd14  /dev/nbd2p1  /dev/nbd5  /dev/nbd8
+/dev/nbd1   /dev/nbd12  /dev/nbd15  /dev/nbd3    /dev/nbd6  /dev/nbd9
+/dev/nbd10  /dev/nbd13  /dev/nbd2   /dev/nbd4    /dev/nbd7
+
+从nbd0-nbd15，任选一个设备进行使用，本例中使用/dev/nbd2
+
+$ qemu-nbd --connect&lt;span class="o"&gt;=&lt;/span&gt;/dev/nbd2 /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+或
+$ qemu-nbd -c /dev/nbd2 /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+
+$ fdisk -l /dev/nbd2
+
+Disk /dev/nbd2: &lt;span class="m"&gt;933&lt;/span&gt; GiB, &lt;span class="m"&gt;1001801121792&lt;/span&gt; bytes, &lt;span class="m"&gt;1956642816&lt;/span&gt; sectors
+Units: sectors of &lt;span class="m"&gt;1&lt;/span&gt; * &lt;span class="nv"&gt;512&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;512&lt;/span&gt; bytes
+Sector size &lt;span class="o"&gt;(&lt;/span&gt;logical/physical&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="m"&gt;512&lt;/span&gt; bytes / &lt;span class="m"&gt;512&lt;/span&gt; bytes
+I/O size &lt;span class="o"&gt;(&lt;/span&gt;minimum/optimal&lt;span class="o"&gt;)&lt;/span&gt;: &lt;span class="m"&gt;512&lt;/span&gt; bytes / &lt;span class="m"&gt;512&lt;/span&gt; bytes
+Disklabel type: gpt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;挂载nbd2设置到系统文件中，正常 Mount分区后可进行读写等操作，如通过rsync备份数据；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mount /dev/nbd2p1 /media/s1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;使用完成后的卸载方式与顺序，先卸载本系统中分区，然后卸载镜像磁盘；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ umount /media/s1
+
+$ qemu-nbd --disconnect /dev/nbd2
+或
+$ qemu-nbd -d /dev/nbd2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;如挂载NTFS分区，需在Step5前增加如下操作，即NTFS对应安装ntfs-3g文件系统后，再挂载；&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ apt-get install ntfs-3g
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="PVE"></category><category term="qemu-nbd"></category><category term="Qcow2"></category><category term="命令行"></category></entry><entry><title>内网测速工具Iperf3使用记录</title><link href="/2021/06/Howto-Use-Iperf3-Testing-Network-Performance.html" rel="alternate"></link><published>2021-06-24T14:25:00+08:00</published><updated>2021-06-24T14:25:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-06-24:/2021/06/Howto-Use-Iperf3-Testing-Network-Performance.html</id><summary type="html">&lt;p&gt;Linux系统中，经常使用Iperf3工具测试网络速度，非常方便；该工具同时支持多平台使用，经常用于内网速度测试使用。&lt;/p&gt;
+&lt;p&gt;首页安装iperf3包，通常各主流版本均支持默认安装，也可根据自行安装，服务端与客户端均需安装，方可使用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Debian/Ubuntu安装
+$ apt install iperf3 # 
+
+Docker安装
+$ docker search iperf3
+$ docker …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;Linux系统中，经常使用Iperf3工具测试网络速度，非常方便；该工具同时支持多平台使用，经常用于内网速度测试使用。&lt;/p&gt;
+&lt;p&gt;首页安装iperf3包，通常各主流版本均支持默认安装，也可根据自行安装，服务端与客户端均需安装，方可使用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Debian/Ubuntu安装
+$ apt install iperf3 # 
+
+Docker安装
+$ docker search iperf3
+$ docker pull mlabbe/iperf3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;服务端启动Iperf3 Server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ iperf3 -s
+$ netstat -nltp &lt;span class="p"&gt;|&lt;/span&gt; grep &lt;span class="m"&gt;5201&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;客户端发起请求，IP为服务端地址&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ iperf3 -c IP
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;TCP 下行测试&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;iperf3 -c IP -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;UDP 上行测试&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ iperf3 -c &lt;span class="m"&gt;192&lt;/span&gt;.168.50.167 -u -b 300M
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;UDP 下行测试,IP替换为服务端地址&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ iperf3 -c IP -u -b 500M
+$ iperf3 -c IP -u -b 1000M
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;网络压力测试&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ iperf3 -c -R -P &lt;span class="m"&gt;16&lt;/span&gt;
+$ iperf3 -c &lt;span class="m"&gt;104&lt;/span&gt;.243.22.130 -P &lt;span class="m"&gt;10&lt;/span&gt; -R -p &lt;span class="m"&gt;5201&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;&lt;a href="https://iperf.fr/iperf-download.php"&gt;多平台Iperf3工具下载&lt;/a&gt;:&lt;/em&gt; &lt;a href="https://iperf.fr/iperf-download.php" target="_blank"&gt;https://iperf.fr/iperf-download.php&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="Iperf3"></category><category term="Linux测速"></category></entry><entry><title>Linux命令访问NAS中Samba共享文件夹</title><link href="/2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html" rel="alternate"></link><published>2021-06-13T18:25:00+08:00</published><updated>2021-06-13T18:25:00+08:00</updated><author><name>工长</name></author><id>tag:None,2021-06-13:/2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html</id><summary type="html">&lt;p&gt;NAS系统中设置好Samba共享文件夹，保存常用的资源文件；通常使用Windows系统直接访问网络共享资源，验证通过后可直接浏览文件夹。&lt;/p&gt;
+&lt;p&gt;近期使用网络中一台Linux主机，需要连接Samba共享文件夹并使用其中资源，Linux系统仅提供命令行操作。&lt;/p&gt;
+&lt;p&gt;经过简单几步操作，可以在本地访问远程NAS中的Samba共享文件夹及资源；记录如下，方便今后类似需求时快速查看：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装软件包 samclient， cifs-utils，未安装cifs无法Mount cifs目录；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ apt-get update
+$ apt-get install …&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;NAS系统中设置好Samba共享文件夹，保存常用的资源文件；通常使用Windows系统直接访问网络共享资源，验证通过后可直接浏览文件夹。&lt;/p&gt;
+&lt;p&gt;近期使用网络中一台Linux主机，需要连接Samba共享文件夹并使用其中资源，Linux系统仅提供命令行操作。&lt;/p&gt;
+&lt;p&gt;经过简单几步操作，可以在本地访问远程NAS中的Samba共享文件夹及资源；记录如下，方便今后类似需求时快速查看：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装软件包 samclient， cifs-utils，未安装cifs无法Mount cifs目录；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ apt-get update
+$ apt-get install smbclient
+$ apt-get install cifs-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;运行以下命令，按提示输入用户密码，查询指定IP及用户权限下可供访问的共享文件夹&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ smbclient -U username -L &lt;span class="m"&gt;192&lt;/span&gt;.168.5.241
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;Enter&lt;/span&gt; &lt;span class="nv"&gt;WORKGROUP&lt;/span&gt;\&lt;span class="nv"&gt;XXX&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;s password:&lt;/span&gt;
+
+        &lt;span class="nv"&gt;Sharename&lt;/span&gt;       &lt;span class="nv"&gt;Type&lt;/span&gt;      &lt;span class="nv"&gt;Comment&lt;/span&gt;
+        &lt;span class="o"&gt;---------&lt;/span&gt;       &lt;span class="o"&gt;----&lt;/span&gt;      &lt;span class="o"&gt;-------&lt;/span&gt;
+        &lt;span class="nv"&gt;nas&lt;/span&gt;             &lt;span class="nv"&gt;Disk&lt;/span&gt;
+        &lt;span class="nv"&gt;nas_sdb1&lt;/span&gt;        &lt;span class="nv"&gt;Disk&lt;/span&gt;
+        &lt;span class="nv"&gt;IPC&lt;/span&gt;$            &lt;span class="nv"&gt;IPC&lt;/span&gt;       &lt;span class="nv"&gt;IPC&lt;/span&gt; &lt;span class="nv"&gt;Service&lt;/span&gt; &lt;span class="ss"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;OMV&lt;/span&gt; &lt;span class="nv"&gt;server&lt;/span&gt;&lt;span class="ss"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;Reconnecting&lt;/span&gt; &lt;span class="nv"&gt;with&lt;/span&gt; &lt;span class="nv"&gt;SMB1&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nv"&gt;workgroup&lt;/span&gt; &lt;span class="nv"&gt;listing&lt;/span&gt;.
+
+        &lt;span class="nv"&gt;Server&lt;/span&gt;               &lt;span class="nv"&gt;Comment&lt;/span&gt;
+        &lt;span class="o"&gt;---------&lt;/span&gt;            &lt;span class="o"&gt;-------&lt;/span&gt;
+
+        &lt;span class="nv"&gt;Workgroup&lt;/span&gt;            &lt;span class="nv"&gt;Master&lt;/span&gt;
+        &lt;span class="o"&gt;---------&lt;/span&gt;            &lt;span class="o"&gt;-------&lt;/span&gt;
+        &lt;span class="nv"&gt;WORKGROUP&lt;/span&gt;            &lt;span class="nv"&gt;OMV&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;列出无须密码可以访问的目录及文件&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ smbclient -L //192.168.5.241 -N
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;确定要接入的共享文件夹名称，如：nas或nas_sdb1，运行以下命令，将远程Samba协议的共享文件夹mount到本地目录下，成功后可在本地自由访问&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mkdir /media/folder1
+
+$ mount -t cifs -o &lt;span class="nv"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;username //192.168.5.241/nas /media/folder1
+或
+$ mount -t cifs -o &lt;span class="nv"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;username, &lt;span class="nv"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;validpassword //192.168.5.241/nas /media/folder1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;按提示输入password, 回车完成Mount，无错误信息则Mount成功；&lt;/p&gt;
+&lt;p&gt;切换到/media/folder1目录下查看或进行正常操作。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;匿名访问文件共享目录&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ mount -t cifs //192.168.5.241/path-to-share /media/path-to-mount
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Ref Link1:&lt;/em&gt; &lt;a href="https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/" target="_blank"&gt;https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Pelican Image" src="../images/pelican1.jpg"&gt;&lt;/p&gt;</content><category term="Tech"></category><category term="Linux"></category><category term="Samba共享"></category><category term="命令行"></category></entry></feed>
