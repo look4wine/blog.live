@@ -1,88 +1,65 @@
 <!DOCTYPE html>
+
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
-  <meta charset="utf-8">
-  <title>Python Pelican加Github组合，超简单的博客平台 &mdash; 自在工坊</title>
-  <meta name="author" content="工长">
-
-  <link rel="canonical" href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html"/>
-  
-  <meta property="og:site_name" content="自在工坊" />
-  <meta property="og:type" content="article" />
-    
-  <meta property="og:title" content="Python Pelican加Github组合，超简单的博客平台" />
-  <meta property="og:url" content="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html" />
-  <meta property="og:description" content="Pelican Blog工具特点，静态页面生成速度快，维护简单； 下载最新版 Pelican https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 安装方式参见文档 …" />
-  <meta property="article:published_time" content="2021-08-22 14:25:00+08:00" />
-  <meta property="article:modified_time" content="2021-09-15 19:30:00+08:00" />
-
-
-
-
-
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-    <link href="https://www.kovlala.fun/favicon.png" rel="icon">
-
-  <link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection"
-        rel="stylesheet" type="text/css">
-
-  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
-
-  <script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
-  <script src="https://www.kovlala.fun/theme/js/ender.js"></script>
-  <script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
-  
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
-  <script>
+<meta charset="utf-8"/>
+<title>Python Pelican与Github组合，建立超简单的个人博客平台 — 自在工坊</title>
+<meta content="工长" name="author"/>
+<meta content="如何使用安全、稳定的公共平台与成熟的Python技术，快速建立运维成本极低同时运行高效的个人博客系统！" name="description">
+<link href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html" rel="canonical"/>
+<meta content="自在工坊" property="og:site_name">
+<meta content="article" property="og:type"/>
+<meta content="Python Pelican与Github组合，建立超简单的个人博客平台" property="og:title"/>
+<meta content="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html" property="og:url"/>
+<meta content="Pelican Blog工具特点，静态页面生成速度快，维护简单； 下载最新版 Pelican https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 安装方式参见文档 …" property="og:description"/>
+<meta content="2021-08-22 14:25:00+08:00" property="article:published_time"/>
+<meta content="2021-09-15 19:30:00+08:00" property="article:modified_time"/>
+<!-- http://t.co/dKP3o1e -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="https://www.kovlala.fun/favicon.png" rel="icon"/>
+<link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
+<script src="https://www.kovlala.fun/theme/js/ender.js"></script>
+<script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   
   gtag('config', 'G-D6P0W94D3K');
-  </script>  
- 
-  
-</head>
-
-<body >
-  <header role="banner"
-  >
+  </script>
+</meta></meta><link href="https://www.kovlala.fun\2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html" rel="canonical"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "自在工坊", "item": "https://www.kovlala.fun"}, {"@type": "ListItem", "position": 2, "name": "2021", "item": "https://www.kovlala.fun\\2021"}, {"@type": "ListItem", "position": 3, "name": "08", "item": "https://www.kovlala.fun\\2021/08"}, {"@type": "ListItem", "position": 4, "name": "Howto setup blog with python pelican and github", "item": "https://www.kovlala.fun\\2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html"}]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Person", "name": "工长"}, "publisher": {"@type": "Organization", "name": "自在工坊"}, "headline": "Python Pelican与Github组合，建立超简单的个人博客平台", "about": "Tech", "datePublished": "2021-08-22 14:25"}</script></head>
+<body>
+<header role="banner">
 <hgroup>
-  <h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
-    <h2>走在代码边缘</h2>
+<h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
+<h2>走在代码边缘</h2>
 </hgroup></header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
 </ul>
-
-
 <ul class="main-navigation">
-    <li><a href="https://www.kovlala.fun">Blog</a></li>
-    <li><a href="/category/tech.html">Tech</a></li>
+<li><a href="https://www.kovlala.fun">Blog</a></li>
+<li><a href="/category/tech.html">Tech</a></li>
 </ul></nav>
-  <div id="main">
-    <div id="content">
+<div id="main">
+<div id="content">
 <div>
-  <article class="hentry" role="article">
+<article class="hentry" role="article">
 <header>
-      <h1 class="entry-title">Python Pelican加Github组合，超简单的博客平台</h1>
-    <p class="meta">
-<time datetime="2021-08-22T14:25:00+08:00" pubdate>周日 22 八月 2021</time>      
-    </p>
+<h1 class="entry-title">Python Pelican与Github组合，建立超简单的个人博客平台</h1>
+<p class="meta">
+<time datetime="2021-08-22T14:25:00+08:00" pubdate="">周日 22 八月 2021</time>
+</p>
 </header>
-
-    <div class="entry-content"><p>Pelican Blog工具特点，静态页面生成速度快，维护简单；
+<div class="entry-content"><p>Pelican Blog工具特点，静态页面生成速度快，维护简单；
 下载最新版 Pelican <a href="https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip" target="_blank">https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip</a>. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 
 安装方式参见文档：<a href="https://docs.getpelican.com/en/latest/" target="_blank">https://docs.getpelican.com/en/latest/</a>. </p>
 <h2>Pelican简单设置</h2>
@@ -106,7 +83,6 @@ modified值是最后编辑文章的时间，默认和date相同。可以通过mo
 
 <span class="n">Blog的Article页面内容部分</span>
 </code></pre></div>
-
 <p>页面
 在content下面创建了目录pages，该目录下所有的文件都将被生成静态页面，比如About和Contact页面。</p>
 <p>可以通过设置DISPLAY_PAGES_ON_MENU来控制页面是否在导航栏显示，默认情况是True</p>
@@ -120,22 +96,19 @@ markdonw格式下样例如下：
 [a link relative to the current file]({filename}category/article1.rst)
 [a link relative to the content root]({filename}/category/article1.rst)
 </code></pre></div>
-
 <p>链接静态文件
 需要引用到的静态资源，比如图片，PDF文件等，需要在pelicanconf.py中配置STATIC_PATHS属性，Pelican默认设置content下的images为图片资源，其他的资源需要进行配置。
 创建Article页面时，Pelican会将图片复制到output/images/目录下，将pdf复制到output/pdfs/目录下，同时将链接适配到Article文件中</p>
-<div class="highlight"><pre><span></span><code>STATIC_PATHS = [&#39;images&#39;, &#39;pdfs&#39;]
+<div class="highlight"><pre><span></span><code>STATIC_PATHS = ['images', 'pdfs']
 </code></pre></div>
-
 <p>发布草稿
 对部分Article希望作为草稿先发布出来看下效果，不让Article在首页和分类列表里面显示出来，可以在文章中添加Status: draft属性。修改文章的配置为Status: published将文章正式发布出来。</p>
 <p>如果将所有刚写好的文章都作为草搞件发布的话，可以在配置文件中配置DEFAULT_METADATA
 属性</p>
 <div class="highlight"><pre><span></span><code>DEFAULT_METADATA = {
-        &#39;status&#39;: &#39;draft&#39;,
+        'status': 'draft',
 }
 </code></pre></div>
-
 <p>文章在发布的时候默认均为草稿，通过修改文章的配置为Status: published将文章正式发布。</p>
 <h2>Pelican Blog 内容自动发布Github</h2>
 <p>Github上发布，后续维护成本可忽略不计；个人建立的VPS中发布，如仅针对一人Blog，显然成本占用的维护精力比较大，综合考虑通过Github发布是最优选择。</p>
@@ -146,11 +119,10 @@ markdonw格式下样例如下：
 <p>本机新加入或编辑Article/Post的内容后，通过使用git发布：</p>
 <div class="highlight"><pre><span></span><code>$ pelican content <span class="c1"># 更新content内容</span>
 $ git add . <span class="c1"># git添加</span>
-$ git commit -am <span class="s1">&#39;update&#39;</span>   <span class="c1"># 加入注释内容</span>
+$ git commit -am <span class="s1">'update'</span>   <span class="c1"># 加入注释内容</span>
 $ git push  <span class="c1"># 向私有repo中Push更新的内容</span>
 $ 根据系统提示，录入key完成更新
 </code></pre></div>
-
 <p>自动发布，通过Action自动完成从内容源与发布版本的文件传输，约3-5分钟后线上内容完成更新，以下样例工作正常，可根据实际变化调整；</p>
 <div class="highlight"><pre><span></span><code># This is a basic workflow to help you get started with Actions
 
@@ -169,8 +141,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called &quot;build&quot;
-  # Secodn job called &quot;publish&quot;
+  # This workflow contains a single job called "build"
+  # Secodn job called "publish"
   publish: 
     runs-on: ubuntu-latest
     steps:
@@ -180,23 +152,22 @@ jobs:
     #- name: Set up Python
     #  uses: actions/setup-python@v1
     #  with:
-    #    python-version: &#39;3.8&#39;
+    #    python-version: '3.8'
     #- name: Insall dependencies
     #  run: pip install -r requirements.txt
 
     - name: Pushes to another repository
       uses: cpina/github-action-push-to-another-repository@main # 关键点，自用Github提供的大牛们写好的Action
       env:
-        API_TOKEN_GITHUB: <span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>} # API_TOKEN_GITHUB, 在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用
+        API_TOKEN_GITHUB: <span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>} # API_TOKEN_GITHUB, 在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用；注意setting过程使用到"Personal access tokens",该token需求提前设置好.
       with:
-        source-directory: &#39;output&#39;
-        destination-github-username: &#39;guthub name XXXXXXX&#39; # github用户名
-        destination-repository-name: &#39;namen of repository for publlish&#39; # 目标Repo，即对外发布用的Repo
+        source-directory: 'output'
+        destination-github-username: 'guthub name XXXXXXX' # github用户名
+        destination-repository-name: 'namen of repository for publlish' # 目标Repo，即对外发布用的Repo
         user-email: XXXXXXXX@XXXXXXXX # github email
         commit-message: Post
         target-branch: master   
 </code></pre></div>
-
 <p>output目录下加入CNAME文件，内容为定制化的域名(Custom Domain)，否则每次push后，会修改为Github repo默认的URL进行访问。</p>
 <h2>Links:</h2>
 <ul>
@@ -204,77 +175,74 @@ jobs:
 <li><em>Ref Link:</em> <a href="https://github.com/getpelican/pelican" target="_blank">https://github.com/getpelican/pelican</a></li>
 <li><em>Ref Link:</em> <a href="https://github.com/getpelican/pelican-themes" target="_blank">https://github.com/getpelican/pelican-themes</a></li>
 </ul>
-<p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"></p></div>
-    <footer>
+<p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
+<footer>
 <p class="meta">
-  <span class="byline author vcard">
+<span class="byline author vcard">
     Posted by <span class="fn">
         工长
     </span>
-  </span>
-<time datetime="2021-08-22T14:25:00+08:00" pubdate>周日 22 八月 2021</time>  <span class="categories">
-    <a class='category' href='https://www.kovlala.fun/category/tech.html'>Tech</a>
-  </span>
-  <span class="categories">
-    <a class="category" href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a class="category" href="https://www.kovlala.fun/tag/blog.html">Blog</a>  </span>
+</span>
+<time datetime="2021-08-22T14:25:00+08:00" pubdate="">周日 22 八月 2021</time> <span class="categories">
+<a class="category" href="https://www.kovlala.fun/category/tech.html">Tech</a>
+</span>
+<span class="categories">
+<a class="category" href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a class="category" href="https://www.kovlala.fun/tag/blog.html">Blog</a> </span>
 </p><div class="sharing">
-</div>    </footer>
-  </article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
-  </section>
+</div> </footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div aria-live="polite" id="disqus_thread"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+</section>
 </div>
-
 <aside class="sidebar">
 <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    <li class="post">
-        <a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
-    </li>
-    <li class="post">
-        <a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
-    </li>
-    <li class="post">
-        <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican加Github组合，超简单的博客平台</a>
-    </li>
-    <li class="post">
-        <a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-    </li>
-    <li class="post">
-        <a href="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
-    </li>
-  </ul>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
+</li>
+</ul>
 </section><section>
-  <h1>Categories</h1>
-    <ul id="recent_posts">
-      <li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
-      <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
-  </ul>
+<h1>Categories</h1>
+<ul id="recent_posts">
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
+</ul>
 </section>
 <section>
-  <h1>Tags</h1>
-    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
-    <section>
-        <h1>Blogroll</h1>
-        <ul>
-            <li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
-            <li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
-            <li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
-        </ul>
-    </section>
-
+<h1>Tags</h1>
+<a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<section>
+<h1>Blogroll</h1>
+<ul>
+<li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
+<li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
+<li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
+</ul>
+</section>
 </aside>
-    </div>
-  </div>
-  <footer role="contentinfo">
+</div>
+</div>
+<footer role="contentinfo">
 <p>
-    Copyright &copy;  2021  工长 &mdash;
+    Copyright ©  2021  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
-</p>  </footer>
-    <script type="text/javascript">
+</p> </footer>
+<script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'G-D6P0W94D3K']);
     _gaq.push(['_trackPageview']);
@@ -292,11 +260,11 @@ jobs:
     ga('create', 'G-D6P0W94D3K');
     ga('send', 'pageview');
 </script>
-  <script type="text/javascript">
+<script type="text/javascript">
     var disqus_shortname = 'kovlala';
           var disqus_identifier = '/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html';
     var disqus_url = 'https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html';
-    var disqus_title = 'Python Pelican加Github组合，超简单的博客平台';
+    var disqus_title = 'Python Pelican与Github组合，建立超简单的个人博客平台';
     (function() {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
