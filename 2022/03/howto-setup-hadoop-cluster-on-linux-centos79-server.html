@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8"/>
+<title>Howto Setup Hadoop Cluster on Linux CentOS7.9 Server — 自在工坊</title>
+<meta content="工长" name="author"/>
+<link href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html" rel="canonical"/>
+<meta content="自在工坊" property="og:site_name">
+<meta content="article" property="og:type">
+<meta content="Howto Setup Hadoop Cluster on Linux CentOS7.9 Server" property="og:title"/>
+<meta content="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html" property="og:url"/>
+<meta content="虚拟机hadoop集群配置流程记录 目录 1 方案设计 2 安装JDK 3 配置环境变量 4 安装Hadoop 5 配置集群 6 配置结点间免密登录 7 软件与配置文件多结点分发 8 启动集群 9 测试集群 …" property="og:description"/>
+<meta content="2022-03-18 10:25:00+08:00" property="article:published_time"/>
+<!-- http://t.co/dKP3o1e -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="https://www.kovlala.fun/favicon.png" rel="icon"/>
+<link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
+<script src="https://www.kovlala.fun/theme/js/ender.js"></script>
+<script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  gtag('config', 'G-D6P0W94D3K');
+  </script>
+</meta></meta><link href="https://www.kovlala.fun\2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html" rel="canonical"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "自在工坊", "item": "https://www.kovlala.fun"}, {"@type": "ListItem", "position": 2, "name": "2022", "item": "https://www.kovlala.fun\\2022"}, {"@type": "ListItem", "position": 3, "name": "03", "item": "https://www.kovlala.fun\\2022/03"}, {"@type": "ListItem", "position": 4, "name": "Howto setup hadoop cluster on linux centos79 server", "item": "https://www.kovlala.fun\\2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html"}]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Person", "name": "Easy"}, "publisher": {"@type": "Organization", "name": "自在工坊"}, "headline": "Howto Setup Hadoop Cluster on Linux CentOS7.9 Server", "about": "03", "datePublished": "2022-03-18 10:25"}</script></head>
+<body>
+<header role="banner">
+<hgroup>
+<h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
+<h2>走在代码边缘</h2>
+</hgroup></header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+</ul>
+<ul class="main-navigation">
+<li><a href="https://www.kovlala.fun">Blog</a></li>
+<li><a href="/category/tech.html">Tech</a></li>
+</ul></nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</h1>
+<p class="meta">
+<time datetime="2022-03-18T10:25:00+08:00" pubdate="">周五 18 三月 2022</time>
+</p>
+</header>
+<div class="entry-content"><h3>虚拟机hadoop集群配置流程记录</h3>
+<h4><a id="section0">目录</a></h4>
+<p><a href="#section1">1 方案设计</a></p>
+<p><a href="#section2">2 安装JDK</a></p>
+<p><a href="#section3">3 配置环境变量</a></p>
+<p><a href="#section4">4 安装Hadoop</a></p>
+<p><a href="#section5">5 配置集群</a></p>
+<p><a href="#section6">6 配置结点间免密登录</a></p>
+<p><a href="#section7">7 软件与配置文件多结点分发</a></p>
+<p><a href="#section8">8 启动集群</a></p>
+<p><a href="#section9">9 测试集群</a></p>
+<p><a href="#section10">10 常见问题</a></p>
+<h3><a id="section1">1 方案设计</a></h3>
+<p>Hadoop完全分布式部署需要在真正的多个节点环境中部署，本次安装Hadoop在Linux环境下进行，需要准备好三台Linux虚拟机环境，模拟三个结点。</p>
+<h4>操作系统和软件版本</h4>
+<p>Hadoop使用JAVA语言编写，所以在安装Hadoop之前需要安装JAVA运行环境。
+hadoop2.x可运行在Jave7&amp;8两个版本，hadoop3.x仅可运行在Java8及以上版本。
+本文中使用的系统与软件版本如下：
+- Linux操作系统：centos7.9
+- JDK版本为：JAVA1.8
+- Hadoop版本为：hadoop-2.10.2</p>
+<p>Hadoop安装位置，全部结点均使用相同位置：  <br/>
+/opt/bigdata/hadoop-2.10.2/</p>
+<h4>集群架构</h4>
+<p>准备三台服务器，可以使用PVE建立三台CentOS虚拟机，IP与结点角色分配如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">框架-结点</th>
+<th align="left">master</th>
+<th align="left">slave1/worker1</th>
+<th align="left">slave2/worker2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">IP</td>
+<td align="left">192.168.5.131</td>
+<td align="left">192.168.5.233</td>
+<td align="left">192.168.5.248</td>
+</tr>
+<tr>
+<td align="left">HDFS进程</td>
+<td align="left">NameNode<br/>DataNode</td>
+<td align="left">DataNode</td>
+<td align="left">SecondaryNameNode<br/>DataNode</td>
+</tr>
+<tr>
+<td align="left">YARN进程</td>
+<td align="left">NodeManager</td>
+<td align="left">NodeManager</td>
+<td align="left">NodeManager<br/>ResourceManager</td>
+</tr>
+</tbody>
+</table>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section2">2 安装JDK</a></h3>
+<p>安装jdk（以master为例，主节点和全部从节点都要配置）</p>
+<div class="highlight"><pre><span></span><code># yum install java-1.8.0-openjdk.x86_64 -y 
+</code></pre></div>
+<p>修改profile,增加JAVA_HOME设置；</p>
+<p>执行source /etc/profile 使配置生效</p>
+<p>检查java版本</p>
+<div class="highlight"><pre><span></span><code>java -version
+</code></pre></div>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section3">3 配置环境变量</a></h3>
+<p>修改主机名
+修改三个节点的/etc/hosts文件，三台机器分别执行以下语句：</p>
+<div class="highlight"><pre><span></span><code>hostnamectl set-hostname master
+hostnamectl set-hostname worker1
+hostnamectl set-hostname worker2
+</code></pre></div>
+<p>添加ip映射，通过vi编辑修改</p>
+<div class="highlight"><pre><span></span><code>vi /etc/hosts
+
+# 在/etc/hosts的末尾添加
+192.168.5.131 master
+192.168.5.233 slave1
+192.168.5.248 slave2
+</code></pre></div>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section4">4 安装hadoop</a></h3>
+<p>下载安装包
+https://hadoop.apache.org/releases.html</p>
+<p>下载2.X版本
+https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-2.10.2/hadoop-2.10.2.tar.gz</p>
+<p>Linux下载命令</p>
+<div class="highlight"><pre><span></span><code>wget https://dlcdn.apache.org/hadoop/common/hadoop-2.10.2/hadoop-2.10.2.tar.gz
+</code></pre></div>
+<p>开始配置hadoop集群，先配置主结点master，各个从结点使用master中的hdoop文件同步完成配置；</p>
+<p>解压缩文件包，安装文件到 /opt/bigdata</p>
+<div class="highlight"><pre><span></span><code>tar -zxvf hadoop-2.10.2.tar.gz -C /opt/bigdata
+</code></pre></div>
+<h4>添加Hadoop到环境变量</h4>
+<div class="highlight"><pre><span></span><code><span class="n">vi</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span>
+
+<span class="c1">##HADOOP_HOME</span>
+<span class="k">export</span> <span class="n">HADOOP_HOME</span><span class="o">=/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10</span><span class="o">.</span><span class="mi">2</span>
+<span class="k">export</span> <span class="n">PATH</span><span class="o">=$</span><span class="n">PATH</span><span class="p">:</span><span class="o">$</span><span class="n">HADOOP_HOME</span><span class="o">/</span><span class="n">bin</span>
+<span class="k">export</span> <span class="n">PATH</span><span class="o">=$</span><span class="n">PATH</span><span class="p">:</span><span class="o">$</span><span class="n">HADOOP_HOME</span><span class="o">/</span><span class="n">sbin</span>
+</code></pre></div>
+<p>更新环境变量</p>
+<div class="highlight"><pre><span></span><code>source /etc/profile
+</code></pre></div>
+<p>查看hadoop版本信息，成功显示则安装成功</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">hadoop</span><span class="w"> </span><span class="n">version</span><span class="w"></span>
+<span class="n">Hadoop</span><span class="w"> </span><span class="mf">2.10.2</span><span class="w"></span>
+<span class="n">Subversion</span><span class="w"> </span><span class="k">Unknown</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="mi">965</span><span class="n">fd380006fa78b2315668fbc7eb432e1d8200f</span><span class="w"></span>
+<span class="n">Compiled</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">ubuntu</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">2022</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">24</span><span class="nl">T22</span><span class="p">:</span><span class="mi">35</span><span class="n">Z</span><span class="w"></span>
+<span class="n">Compiled</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">protoc</span><span class="w"> </span><span class="mf">2.5.0</span><span class="w"></span>
+<span class="k">From</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="nf">checksum</span><span class="w"> </span><span class="n">d3ab737f7788f05d467784f0a86573fe</span><span class="w"></span>
+<span class="n">This</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">common</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">common</span><span class="o">-</span><span class="mf">2.10.2</span><span class="p">.</span><span class="n">jar</span><span class="w"></span>
+<span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"></span>
+</code></pre></div>
+<h4>hadoop目录说明：</h4>
+<p>查看hadoop文件目录</p>
+<div class="highlight"><pre><span></span><code>ll /opt/bigdata/hadoop-2.10.2/
+</code></pre></div>
+<p>1.bin目录:对Hadoop进行操作的相关命令，如hadoop,hdfs等
+2.etc目录:Hadoop的配置文件目录，入hdfs-site.xml,core-site.xml等
+3.lib目录:Hadoop本地库(解压缩的依赖)
+4.sbin目录:存放的是Hadoop集群启动停止相关脚本，命令
+5.share目录:Hadoop的一些jar,官方案例jar，文档等</p>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section5">5 集群配置</a></h3>
+<p>主结点中修改以下四个核心文件，完成后同步到各个从结点
+- hadoop-env.sh
+- core-site.xml
+- mapred-site.xml
+- yarn-site.xml</p>
+<p>Hadoop集群配置 ==&gt; HDFS集群配置 + MapReduce集群配置 + Yarn集群配置</p>
+<p>配置hadoop-env.sh 将JDK路径加入配置给HDFS</p>
+<h4>hadoop-env.sh</h4>
+<div class="highlight"><pre><span></span><code><span class="n">vi</span> <span class="n">etc</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">env</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># export JAVA_HOME</span>
+<span class="k">export</span> <span class="n">JAVA_HOME</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">openjdk</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mf">0.312</span><span class="o">.</span><span class="n">b07</span><span class="o">-</span><span class="mf">1.</span><span class="n">el7_9</span><span class="o">.</span><span class="n">x86_64</span>
+<span class="k">export</span> <span class="n">HDFS_NAMENODE_USER</span><span class="o">=</span><span class="n">root</span>
+<span class="k">export</span> <span class="n">HDFS_DATANODE_USER</span><span class="o">=</span><span class="n">root</span>
+<span class="k">export</span> <span class="n">HDFS_SECONDARYNAMENODE_USER</span><span class="o">=</span><span class="n">root</span>
+<span class="k">export</span> <span class="n">YARN_RESOURCEMANAGER_USER</span><span class="o">=</span><span class="n">root</span>
+<span class="k">export</span> <span class="n">YARN_NODEMANAGER_USER</span><span class="o">=</span><span class="n">root</span>
+</code></pre></div>
+<h4>core-site.xml</h4>
+<p>指定NameNode节点以及数据存储目录</p>
+<div class="highlight"><pre><span></span><code>vi etc/hadoop/core-site.xml
+
+<span class="nt">&lt;configuration&gt;</span>
+<span class="c">&lt;!-- 非必须项 --&gt;</span>
+    <span class="c">&lt;!-- 配置HDFS网页登录使用的静态用户为dlw --&gt;</span>
+
+<span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>hadoop.http.staticuser.user<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>dlw<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;value&gt;</span>root<span class="nt">&lt;/value&gt;</span>
+
+<span class="nt">&lt;/property&gt;</span>
+
+<span class="c">&lt;!-- 指定HDFS中NameNode的地址 --&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>fs.defaultFS<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>hdfs://master:9000<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+
+<span class="c">&lt;!-- 指定Hadoop运行时产生文件的存储目录 --&gt;</span> 
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>hadoop.tmp.dir<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>file:/var/tmp/hadoop/tmp<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<h4>hdfs-site.xml</h4>
+<p>指定secondarynamenode节点</p>
+<div class="highlight"><pre><span></span><code>vi etc/hadoop/hdfs-site.xml
+
+<span class="nt">&lt;configuration&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>dfs.namenode.http-address<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>0.0.0.0:50070<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>dfs.namenode.name.dir<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>file:/var/tmp/hadoop/dfs/name<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>dfs.datanode.data.dir<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>file:/var/tmp/hadoop/dfs/data<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="c">&lt;!--副本数量 --&gt;</span> 
+<span class="nt">&lt;property&gt;</span>
+      <span class="nt">&lt;name&gt;</span>dfs.replication<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;value&gt;</span>3<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<h4>mapred-site.xml</h4>
+<p>配置历史服务器
+在Yarn中运行的任务产生的日志数据不能查看，为了查看程序的历史运行情况，需要配置一下历史日志服务器。</p>
+<div class="highlight"><pre><span></span><code>vi mapred-site.xml
+
+<span class="nt">&lt;configuration&gt;</span>
+<span class="c">&lt;!-- 指定MapReduce程序运行在Yarn上 --&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>mapreduce.framework.name<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>yarn<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+
+<span class="c">&lt;!-- jobhistory properties --&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>mapreduce.jobhistory.address<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>master:10020<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+
+<span class="c">&lt;!-- 历史服务器web端地址 --&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>mapreduce.jobhistory.webapp.address<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>master:19888<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<h4>配置yarn-site.xml</h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;configuration&gt;</span>
+
+<span class="c">&lt;!-- Site specific YARN configuration properties --&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.nodemanager.aux-services<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>mapreduce_shuffle<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.resourcemanager.hostname<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>slave2<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.nodemanager.env-whitelist<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>JAVA HOME,HADOOP COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+
+     <span class="c">&lt;!-- 开启日志聚集功能 --&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.log-aggregation-enable<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>true<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+
+    <span class="c">&lt;!-- 设置日志聚集服务器地址 --&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.log.server.url<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>http://192.168.5.131:19888/jobhistory/logs<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+
+    <span class="c">&lt;!-- 设置日志保留时间为7天 --&gt;</span>
+    <span class="nt">&lt;property&gt;</span>
+        <span class="nt">&lt;name&gt;</span>yarn.log-aggregation.retain-seconds<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;value&gt;</span>604800<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section6">6 配置结点间免密登录</a></h3>
+<p>先在主结点完成，然后分别在各个从结点依次完成； 
+主结点操作如下：
+运行ssh-keygen -t rsa 命令，使用默认信息生成key；同步Key到各从结点；</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ssh</span><span class="o">-</span><span class="n">keygen</span><span class="w"> </span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="n">rsa</span><span class="w"></span>
+<span class="n">Generating</span><span class="w"> </span><span class="k">public</span><span class="o">/</span><span class="n">private</span><span class="w"> </span><span class="n">rsa</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">pair</span><span class="p">.</span><span class="w"></span>
+<span class="n">Enter</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">Enter</span><span class="w"> </span><span class="n">passphrase</span><span class="w"> </span><span class="p">(</span><span class="n">empty</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">passphrase</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="n">Enter</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">passphrase</span><span class="w"> </span><span class="nl">again</span><span class="p">:</span><span class="w"></span>
+<span class="n">Your</span><span class="w"> </span><span class="n">identification</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">been</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="p">.</span><span class="w"></span>
+<span class="n">Your</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">been</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="p">.</span><span class="n">pub</span><span class="p">.</span><span class="w"></span>
+<span class="n">The</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">fingerprint</span><span class="w"> </span><span class="k">is</span><span class="err">:</span><span class="w"></span>
+<span class="nl">SHA256</span><span class="p">:</span><span class="n">gVLLOMv</span><span class="o">+</span><span class="mi">9</span><span class="n">bI5Nxw</span><span class="o">/</span><span class="n">qTtB9yT9gugNNC8UYtiWx7BkcDw</span><span class="w"> </span><span class="n">root</span><span class="nv">@master</span><span class="w"></span>
+<span class="n">The</span><span class="w"> </span><span class="k">key</span><span class="err">'</span><span class="n">s</span><span class="w"> </span><span class="n">randomart</span><span class="w"> </span><span class="nc">image</span><span class="w"> </span><span class="k">is</span><span class="err">:</span><span class="w"></span>
+<span class="o">+---[</span><span class="n">RSA 2048</span><span class="o">]----+</span><span class="w"></span>
+<span class="o">|</span><span class="w">      </span><span class="n">o</span><span class="o">==+</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">     </span><span class="o">+</span><span class="p">.</span><span class="o">*</span><span class="n">E</span><span class="p">.</span><span class="o">+</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="o">+</span><span class="n">oo</span><span class="o">+</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="w">   </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">   </span><span class="p">.</span><span class="w"> </span><span class="o">+</span><span class="w">   </span><span class="p">.</span><span class="o">=</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="n">o</span><span class="w">  </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">    </span><span class="n">o</span><span class="w">   </span><span class="n">S</span><span class="o">+</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">   </span><span class="p">.</span><span class="w">      </span><span class="o">*</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="p">.</span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">    </span><span class="p">.</span><span class="w">   </span><span class="p">.</span><span class="n">o</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">     </span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="n">oo</span><span class="o">*</span><span class="w"> </span><span class="o">=</span><span class="w">    </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">      </span><span class="p">.</span><span class="w"> </span><span class="n">o</span><span class="o">=+=</span><span class="w"> </span><span class="p">.</span><span class="w">   </span><span class="o">|</span><span class="w"></span>
+<span class="o">+----[</span><span class="n">SHA256</span><span class="o">]-----+</span><span class="w"></span>
+<span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"></span>
+</code></pre></div>
+<p>然后把公钥复制到各个节点，这里是将master的公钥拷贝到slave1和slave2上，第一次登陆新结点，系统会提示目标结点的登录密码，这里使用root用户，因此为root密码； </p>
+<div class="highlight"><pre><span></span><code><span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">master</span><span class="w"></span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">worker1</span><span class="w"></span>
+<span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">worker2</span><span class="w"></span>
+
+<span class="o">[</span><span class="n">root@master temp</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="n">id</span><span class="w"> </span><span class="n">slave2</span><span class="w"></span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ssh</span><span class="o">-</span><span class="n">copy</span><span class="o">-</span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="nl">INFO</span><span class="p">:</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">key</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="nl">installed</span><span class="p">:</span><span class="w"> </span><span class="ss">"/root/.ssh/id_rsa.pub"</span><span class="w"></span>
+<span class="n">The</span><span class="w"> </span><span class="n">authenticity</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">host</span><span class="w"> </span><span class="s1">'slave2 (192.168.5.248)'</span><span class="w"> </span><span class="n">can</span><span class="s1">'t be established.</span>
+<span class="s1">ECDSA key fingerprint is SHA256:SD7NPOpvABQCFbgp7e0R7gJH1no+Z3IolZsHp+Yh66g.</span>
+<span class="s1">ECDSA key fingerprint is MD5:fd:fd:a2:28:ae:9e:5c:09:bf:1a:5f:a7:e0:be:a6:65.</span>
+<span class="s1">Are you sure you want to continue connecting (yes/no)? yes</span>
+<span class="s1">/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed</span>
+<span class="s1">/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys</span>
+<span class="s1">root@slave2'</span><span class="n">s</span><span class="w"> </span><span class="nl">password</span><span class="p">:</span><span class="w"></span>
+
+<span class="n">Number</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">key</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="nl">added</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+
+<span class="n">Now</span><span class="w"> </span><span class="k">try</span><span class="w"> </span><span class="n">logging</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">machine</span><span class="p">,</span><span class="w"> </span><span class="k">with</span><span class="err">:</span><span class="w">   </span><span class="ss">"ssh 'slave2'"</span><span class="w"></span>
+<span class="ow">and</span><span class="w"> </span><span class="k">check</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">sure</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">key</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">wanted</span><span class="w"> </span><span class="n">were</span><span class="w"> </span><span class="n">added</span><span class="p">.</span><span class="w"></span>
+
+<span class="o">[</span><span class="n">root@master temp</span><span class="o">]</span><span class="err">#</span><span class="w"></span>
+</code></pre></div>
+<p>测试免密登录是否配置成功</p>
+<div class="highlight"><pre><span></span><code><span class="nv">ssh</span> <span class="nv">slave2</span>
+<span class="k">exit</span> # 回到<span class="nv">master</span>节点
+</code></pre></div>
+<ul>
+<li>备注：在slave1,slave2需要分别重复执行以上操作，完成各结点之间的登录授权。    </li>
+</ul>
+<p>slave结点设置，通过分发文件方式完成；</p>
+<p>配置slaves/workers
+在/opt/bigdata/hadoop-2.10.2/etc/hadoop/路径下编辑slaves或workers
+删除localhost
+加入：</p>
+<div class="highlight"><pre><span></span><code>master
+slave1
+slave2
+</code></pre></div>
+<p>workers中不能有任何多余的空格，不能有多余的空行。</p>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section7">7 软件与配置文件多结点分发</a></h3>
+<p>在master主结点中完成设置后，通过以下方式向其它结点复制分发文件； 此种方式确定各结点软件版本与配置保持一致； 
+可以使用scp或rsync两种工具完成，</p>
+<h4>分发jdk，$PWD：获取当前所在目录的绝对路径</h4>
+<div class="highlight"><pre><span></span><code><span class="n">scp</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">java</span><span class="o">-</span><span class="mf">1.8.0</span><span class="o">-</span><span class="n">openjdk</span><span class="o">-</span><span class="mf">1.8.0.332</span><span class="p">.</span><span class="n">b09</span><span class="o">-</span><span class="mf">1.</span><span class="n">el7_9</span><span class="p">.</span><span class="n">x86_64</span><span class="o">/</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave1</span><span class="err">:$</span><span class="n">PWD</span><span class="w"></span>
+<span class="n">scp</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">java</span><span class="o">-</span><span class="mf">1.8.0</span><span class="o">-</span><span class="n">openjdk</span><span class="o">-</span><span class="mf">1.8.0.332</span><span class="p">.</span><span class="n">b09</span><span class="o">-</span><span class="mf">1.</span><span class="n">el7_9</span><span class="p">.</span><span class="n">x86_64</span><span class="o">/</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave2</span><span class="err">:$</span><span class="n">PWD</span><span class="w"></span>
+</code></pre></div>
+<h5>分发hadoop</h5>
+<div class="highlight"><pre><span></span><code><span class="n">scp</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave1</span><span class="err">:$</span><span class="n">PWD</span><span class="w"></span>
+<span class="n">scp</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave2</span><span class="err">:$</span><span class="n">PWD</span><span class="w"></span>
+</code></pre></div>
+<h5>分发/etc/hosts</h5>
+<div class="highlight"><pre><span></span><code><span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hosts</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave1</span><span class="err">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="w"></span>
+<span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hosts</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave2</span><span class="err">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="w"></span>
+</code></pre></div>
+<h5>分发/etc/profile</h5>
+<div class="highlight"><pre><span></span><code><span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave1</span><span class="err">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="w"></span>
+<span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">profile</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave2</span><span class="err">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="w"></span>
+</code></pre></div>
+<p>分发后在各从节点上执行source /etc/profile，更新本地配置</p>
+<h5>分发/opt/bigdata/hadoop-2.10.2/etc/hadoop/slaves</h5>
+<div class="highlight"><pre><span></span><code><span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">slaves</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave1</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="w"></span>
+<span class="n">scp</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">slaves</span><span class="w"> </span><span class="n">root</span><span class="nv">@slave2</span><span class="err">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="w"></span>
+</code></pre></div>
+<p>备注：hadoop2.x中使用slave,hadoop3.x中使用worker</p>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section8">8 启动集群</a></h3>
+<p>在第一次启动集群的时候需要将master中的NameNode节点格式化；
+首页启动，要进行初始化节点操作，仅首次操作；如再次操作，会更改结点的ClusterID值，造成DataNode中ClusterID值不匹配问题，导致DataNode启动失败； </p>
+<div class="highlight"><pre><span></span><code>hdfs namenode -format
+</code></pre></div>
+<ul>
+<li>启动hdfs</li>
+</ul>
+<div class="highlight"><pre><span></span><code>start-dfs.sh
+</code></pre></div>
+<ul>
+<li>启动yarn</li>
+</ul>
+<div class="highlight"><pre><span></span><code>start-yarn.sh
+</code></pre></div>
+<ul>
+<li>查看进程</li>
+</ul>
+<div class="highlight"><pre><span></span><code>jps
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master hadoop-2.10.2</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="k">start</span><span class="o">-</span><span class="n">dfs</span><span class="p">.</span><span class="n">sh</span><span class="w"></span>
+<span class="n">Starting</span><span class="w"> </span><span class="n">namenodes</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="o">[</span><span class="n">master</span><span class="o">]</span><span class="w"></span>
+<span class="nl">master</span><span class="p">:</span><span class="w"> </span><span class="n">namenode</span><span class="w"> </span><span class="n">running</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="mf">1014.</span><span class="w"> </span><span class="n">Stop</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="k">first</span><span class="p">.</span><span class="w"></span>
+<span class="nl">localhost</span><span class="p">:</span><span class="w"> </span><span class="n">starting</span><span class="w"> </span><span class="n">datanode</span><span class="p">,</span><span class="w"> </span><span class="n">logging</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">datanode</span><span class="o">-</span><span class="n">master</span><span class="p">.</span><span class="k">out</span><span class="w"></span>
+<span class="n">Starting</span><span class="w"> </span><span class="n">secondary</span><span class="w"> </span><span class="n">namenodes</span><span class="w"> </span><span class="o">[</span><span class="n">0.0.0.0</span><span class="o">]</span><span class="w"></span>
+<span class="n">The</span><span class="w"> </span><span class="n">authenticity</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">host</span><span class="w"> </span><span class="s1">'0.0.0.0 (0.0.0.0)'</span><span class="w"> </span><span class="n">can</span><span class="s1">'t be established.</span>
+<span class="s1">ECDSA key fingerprint is SHA256:dZyz2xZPzpfSayK73IsRVyLdcyPhe0E7oPdoAVgRUFk.</span>
+<span class="s1">ECDSA key fingerprint is MD5:89:f5:6c:70:a5:d6:52:6a:bb:a4:7b:dc:41:4d:51:c1.</span>
+<span class="s1">Are you sure you want to continue connecting (yes/no)? yes</span>
+<span class="s1">0.0.0.0: Warning: Permanently added '</span><span class="mf">0.0.0.0</span><span class="err">'</span><span class="w"> </span><span class="p">(</span><span class="n">ECDSA</span><span class="p">)</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">known</span><span class="w"> </span><span class="n">hosts</span><span class="p">.</span><span class="w"></span>
+<span class="mf">0.0.0.0</span><span class="err">:</span><span class="w"> </span><span class="n">starting</span><span class="w"> </span><span class="n">secondarynamenode</span><span class="p">,</span><span class="w"> </span><span class="n">logging</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">root</span><span class="o">-</span><span class="n">secondarynamenode</span><span class="o">-</span><span class="n">master</span><span class="p">.</span><span class="k">out</span><span class="w"></span>
+</code></pre></div>
+<p>通过jps命令，在各结点查看是否启动成功</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master hadoop-2.10.2</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">jps</span><span class="w"></span>
+<span class="mi">1586</span><span class="w"> </span><span class="n">DataNode</span><span class="w"></span>
+<span class="mi">1746</span><span class="w"> </span><span class="n">SecondaryNameNode</span><span class="w"></span>
+<span class="mi">1014</span><span class="w"> </span><span class="n">NameNode</span><span class="w"></span>
+<span class="mi">1868</span><span class="w"> </span><span class="n">Jps</span><span class="w"></span>
+<span class="o">[</span><span class="n">root@master hadoop-2.10.2</span><span class="o">]</span><span class="err">#</span><span class="w"></span>
+</code></pre></div>
+<p>通过web端管理界面，查看集群运行状态</p>
+<p>Check Hadoop Status:
+http://192.168.5.131:50070/dfshealth.html#tab-overview</p>
+<p>启动历史服务器</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master hadoop-2.9.2</span><span class="o">]</span><span class="err">$</span><span class="w"> </span><span class="n">sbin</span><span class="o">/</span><span class="n">mr</span><span class="o">-</span><span class="n">jobhistory</span><span class="o">-</span><span class="n">daemon</span><span class="p">.</span><span class="n">sh</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="n">historyserver</span><span class="w"></span>
+</code></pre></div>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section9">9 测试集群</a></h3>
+<h4>Example1:</h4>
+<p>生成words.txt,随便录入些内容做wordcount测试集群；</p>
+<div class="highlight"><pre><span></span><code><span class="n">hdfs</span><span class="w"> </span><span class="n">dfs</span><span class="w"> </span><span class="o">-</span><span class="n">mkdir</span><span class="w"> </span><span class="o">/</span><span class="k">input</span><span class="w"></span>
+<span class="n">hdfs</span><span class="w"> </span><span class="n">dfs</span><span class="w"> </span><span class="o">-</span><span class="n">put</span><span class="w"> </span><span class="n">words</span><span class="p">.</span><span class="n">txt</span><span class="w"> </span><span class="o">/</span><span class="k">input</span><span class="o">/</span><span class="w"></span>
+<span class="n">hadoop</span><span class="w"> </span><span class="n">jar</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">mapreduce</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">mapreduce</span><span class="o">-</span><span class="n">examples</span><span class="o">-</span><span class="mf">2.10.2</span><span class="p">.</span><span class="n">jar</span><span class="w"> </span><span class="n">wordcount</span><span class="w"> </span><span class="o">/</span><span class="k">input</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="k">output</span><span class="o">/</span><span class="w"></span>
+
+<span class="n">hdfs</span><span class="w"> </span><span class="n">dfs</span><span class="w"> </span><span class="o">-</span><span class="n">ls</span><span class="w"> </span><span class="o">/</span><span class="k">output</span><span class="w"></span>
+<span class="n">hdfs</span><span class="w"> </span><span class="n">dfs</span><span class="w"> </span><span class="o">-</span><span class="n">cat</span><span class="w"> </span><span class="o">/</span><span class="k">output</span><span class="o">/</span><span class="n">part</span><span class="o">-</span><span class="n">r</span><span class="o">-</span><span class="mi">00000</span><span class="w"></span>
+
+<span class="o">[</span><span class="n">root@master bg</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">hdfs</span><span class="w"> </span><span class="n">dfs</span><span class="w"> </span><span class="o">-</span><span class="n">cat</span><span class="w"> </span><span class="o">/</span><span class="k">output</span><span class="o">/</span><span class="n">part</span><span class="o">-</span><span class="n">r</span><span class="o">-</span><span class="mi">00000</span><span class="w"></span>
+<span class="n">hadoop</span><span class="w">  </span><span class="mi">4</span><span class="w"></span>
+<span class="n">hdfs</span><span class="w">    </span><span class="mi">3</span><span class="w"></span>
+<span class="n">mapreduce</span><span class="w">       </span><span class="mi">2</span><span class="w"></span>
+<span class="n">yarn</span><span class="w">    </span><span class="mi">2</span><span class="w"></span>
+<span class="o">[</span><span class="n">root@master bg</span><span class="o">]</span><span class="err">#</span><span class="w"></span>
+</code></pre></div>
+<p><a href="#section0">返回顶部</a></p>
+<h3><a id="section10">10 常见问题</a></h3>
+<h4>error:</h4>
+<p>运行hadoop命令后，出现which命令无法识别，需求安装which工具；</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">hadoop</span><span class="w"> </span><span class="n">version</span><span class="w"></span>
+<span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="nl">hadoop</span><span class="p">:</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">20</span><span class="err">:</span><span class="w"> </span><span class="nl">which</span><span class="p">:</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">found</span><span class="w"></span>
+<span class="nl">dirname</span><span class="p">:</span><span class="w"> </span><span class="n">missing</span><span class="w"> </span><span class="n">operand</span><span class="w"></span>
+<span class="k">Try</span><span class="w"> </span><span class="s1">'dirname --help'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">.</span><span class="w"></span>
+<span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="nl">hadoop</span><span class="p">:</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">27</span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="n">config</span><span class="p">.</span><span class="nl">sh</span><span class="p">:</span><span class="w"> </span><span class="k">No</span><span class="w"> </span><span class="n">such</span><span class="w"> </span><span class="k">file</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">directory</span><span class="w"></span>
+<span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">bigdata</span><span class="o">/</span><span class="n">hadoop</span><span class="o">-</span><span class="mf">2.10.2</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="nl">hadoop</span><span class="p">:</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">169</span><span class="err">:</span><span class="w"> </span><span class="k">exec</span><span class="err">:</span><span class="w"> </span><span class="err">:</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">found</span><span class="w"></span>
+<span class="o">[</span><span class="n">root@master ~</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">yum</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"></span>
+</code></pre></div>
+<h4>error:</h4>
+<p>浏览器中无法访问Hadoop管理界面：
+http://192.168.5.131:50070/dfshealth.html#tab-overview 无法访问</p>
+<p>排除防火墙原因，优先检查hdfs-site.xml文件，将127.0.0.1修改为0.0.0.0：设置如下：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>dfs.namenode.http-address<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>0.0.0.0:50070<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+</code></pre></div>
+<h4>error</h4>
+<p>结点中DataNode正常启动，但Web管理页面中Live Node对应值为0或1
+修改/etc/hosts文件如下，删除不必要的IP映射；</p>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">root@master hadoop</span><span class="o">]</span><span class="err">#</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hosts</span><span class="w"></span>
+<span class="mf">127.0.0.1</span><span class="w">   </span><span class="n">localhost</span><span class="w"> </span><span class="n">localhost</span><span class="p">.</span><span class="n">localdomain</span><span class="w"> </span><span class="n">localhost4</span><span class="w"> </span><span class="n">localhost4</span><span class="p">.</span><span class="n">localdomain4</span><span class="w"></span>
+<span class="o">::</span><span class="mi">1</span><span class="w">         </span><span class="n">localhost</span><span class="w"> </span><span class="n">localhost</span><span class="p">.</span><span class="n">localdomain</span><span class="w"> </span><span class="n">localhost6</span><span class="w"> </span><span class="n">localhost6</span><span class="p">.</span><span class="n">localdomain6</span><span class="w"></span>
+
+<span class="mf">192.168.5.131</span><span class="w"> </span><span class="n">master</span><span class="w"></span>
+<span class="mf">192.168.5.233</span><span class="w"> </span><span class="n">slave1</span><span class="w"></span>
+<span class="mf">192.168.5.248</span><span class="w"> </span><span class="n">slave2</span><span class="w"></span>
+</code></pre></div>
+<p>重启集群并刷新页面</p>
+<h4>error</h4>
+<p>hadoop分布式集群搭建中，hadoop3.x和hadoop2.x之间在默认配置中存在差别，如web端口从50070改为了9870，使用过程中注意区别版本；</p>
+<h2>Links:</h2>
+<ul>
+<li><em>Ref Link:</em> <a href="https://blog.csdn.net/rznice/article/details/52219909" target="_blank">https://blog.csdn.net/rznice/article/details/52219909</a></li>
+<li><em>Ref Link:</em> <a href="https://blog.csdn.net/qq_39604679/article/details/125017691" target="_blank">https://blog.csdn.net/qq_39604679/article/details/125017691</a></li>
+<li><em>Ref Link:</em> <a href="https://blog.csdn.net/qq_52289797/article/details/120324689" target="_blank">https://blog.csdn.net/qq_52289797/article/details/120324689</a></li>
+<li><em>Ref Link:</em> <a href="https://blog.csdn.net/u011811966/article/details/78424217" target="_blank">https://blog.csdn.net/u011811966/article/details/78424217</a></li>
+<li><em>Ref Link:</em> <a href="https://blog.csdn.net/m0_67393619/article/details/124246473" target="_blank">https://blog.csdn.net/m0_67393619/article/details/124246473</a></li>
+</ul></div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">
+    Posted by <span class="fn">
+        Easy
+    </span>
+</span>
+<time datetime="2022-03-18T10:25:00+08:00" pubdate="">周五 18 三月 2022</time> <span class="categories">
+<a class="category" href="https://www.kovlala.fun/category/03.html">03</a>
+</span>
+<span class="categories">
+<a class="category" href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a class="category" href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a class="category" href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a class="category" href="https://www.kovlala.fun/tag/yarn.html">Yarn</a> </span>
+</p><div class="sharing">
+</div> </footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div aria-live="polite" id="disqus_thread"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
+</li>
+</ul>
+</section><section>
+<h1>Categories</h1>
+<ul id="recent_posts">
+<li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
+</ul>
+</section>
+<section>
+<h1>Tags</h1>
+<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<section>
+<h1>Blogroll</h1>
+<ul>
+<li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
+<li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
+<li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
+</ul>
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo">
+<p>
+    Copyright ©  2021–2022  工长 —
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p> </footer>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'G-D6P0W94D3K']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'G-D6P0W94D3K');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var disqus_shortname = 'kovlala';
+          var disqus_identifier = '/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html';
+    var disqus_url = 'https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html';
+    var disqus_title = 'Howto Setup Hadoop Cluster on Linux CentOS7.9 Server';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

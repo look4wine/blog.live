@@ -122,7 +122,8 @@ $ sudo vim /lib/systemd/system/frps.service
 <h2>Docker安装方式操作如下：</h2>
 <p>首先在服务器，客户端分别安装Docker，安装完成后参照以下方式部署Docker Image</p>
 <p>服务器端Docker</p>
-<div class="highlight"><pre><span></span><code># docker pull snowdreamtech/frps
+<div class="highlight"><pre><span></span><code># docker search frps
+# docker pull snowdreamtech/frps
 # docker run --restart=always --network host -d -v /etc/frp/frps.ini:/etc/frp/frps.ini --name frps snowdreamtech/frps
 
 # /etc/frp/frps.ini # 为本机服务端配置文件
@@ -142,6 +143,10 @@ CONTAINER ID   IMAGE                COMMAND                  CREATED        STAT
 </code></pre></div>
 <p>正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
 Docker方式可与普通方式共同使用，服务不受影响。</p>
+<div class="highlight"><pre><span></span><code><span class="cp"># ssh username@105.113.21.123 -p 6000</span>
+<span class="nl">ip</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">服务端</span><span class="n">VPS的IP地址</span><span class="err">，请根据实际情况修改</span><span class="w"></span>
+<span class="o">-</span><span class="nl">p</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">端口号，</span><span class="w"> </span><span class="err">客户端设置中进行设置，注意在本例中为</span><span class="mi">6000</span><span class="err">，不是</span><span class="mi">7001</span><span class="w"></span>
+</code></pre></div>
 <p>Errors:</p>
 <p>远程登录时反馈错误信息如下：</p>
 <div class="highlight"><pre><span></span><code>Bad ssh config on remote server. Cannot login in
@@ -182,6 +187,9 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
 </li>
 <li class="post">
@@ -193,20 +201,18 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html">使用FRP连接家中服务器</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
+<li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
 <li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -220,7 +226,7 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021  工长 —
+    Copyright ©  2021–2022  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">
