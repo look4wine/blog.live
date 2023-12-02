@@ -160,7 +160,7 @@ jobs:
 <span class="w">    </span>-<span class="w"> </span>name:<span class="w"> </span>Pushes<span class="w"> </span>to<span class="w"> </span>another<span class="w"> </span>repository
 <span class="w">      </span>uses:<span class="w"> </span>cpina/github-action-push-to-another-repository@main<span class="w"> </span>#<span class="w"> </span>关键点，自用Github提供的大牛们写好的Action
 <span class="w">      </span>env:
-<span class="w">        </span>API_TOKEN_GITHUB:<span class="w"> </span><span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>}<span class="w"> </span>#<span class="w"> </span>API_TOKEN_GITHUB,<span class="w"> </span>在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用；注意setting过程使用到"Personal<span class="w"> </span>access<span class="w"> </span>tokens",该token需求提前设置好.
+<span class="w">        </span>API_TOKEN_GITHUB:<span class="w"> </span><span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>}<span class="w"> </span>#<span class="w"> </span>API_TOKEN_GITHUB,<span class="w"> </span>在当前做为源Repo中的Setting中设置API_TOKEN_GITHUB，本处将自动引用；注意生成或修改时会录入"Personal<span class="w"> </span>access<span class="w"> </span>tokens",该token需求提前设置好.
 <span class="w">      </span>with:
 <span class="w">        </span>source-directory:<span class="w"> </span>'output'
 <span class="w">        </span>destination-github-username:<span class="w"> </span>'guthub<span class="w"> </span>name<span class="w"> </span>XXXXXXX'<span class="w"> </span>#<span class="w"> </span>github用户名
@@ -169,6 +169,8 @@ jobs:
 <span class="w">        </span>commit-message:<span class="w"> </span>Post
 <span class="w">        </span>target-branch:<span class="w"> </span>master<span class="w">   </span>
 </code></pre></div>
+<p>API_TOKEN_GITHUB的设置入口如图示；</p>
+<p><img alt="API_TOKEN_GITHUB" src="https://www.kovlala.fun/images/202108_api_token.png"/></p>
 <p>output目录下加入CNAME文件，内容为定制化的域名(Custom Domain)，否则每次push后，会修改为Github repo默认的URL进行访问。</p>
 <p>错误处理</p>
 <div class="highlight"><pre><span></span><code><span class="n">pelican</span> <span class="n">content</span>
