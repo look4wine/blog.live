@@ -59,15 +59,15 @@
 </p>
 </header>
 <div class="entry-content"><p>Linux系统下常用数据文件/目录内容同步命令rsync，常用方式如下</p>
-<div class="highlight"><pre><span></span><code>$ rsync -avz --progress /sourcefolder /targetfolder
-$ rsync -avz --progress /sourcefolder/ /targetfolder
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>rsync<span class="w"> </span>-avz<span class="w"> </span>--progress<span class="w"> </span>/sourcefolder<span class="w"> </span>/targetfolder
+$<span class="w"> </span>rsync<span class="w"> </span>-avz<span class="w"> </span>--progress<span class="w"> </span>/sourcefolder/<span class="w"> </span>/targetfolder
 </code></pre></div>
 <p>参数选项</p>
 <ul>
 <li>关闭 -z 选项，不使用压缩；-z参数仅对传输过程中压缩网络流量有用，会消耗CPU资源。</li>
 <li>使用 -W 选项，整个复制文件，禁用增量/差异比较；当文件时间/大小不同时，rsync将比较差异并且仅更新更改文件。</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ rsync -avW --progress /sourcefolder /targetfolder
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>rsync<span class="w"> </span>-avW<span class="w"> </span>--progress<span class="w"> </span>/sourcefolder<span class="w"> </span>/targetfolder
 </code></pre></div>
 <p>以上rsync执行速度与常用cp速度基本一致。</p>
 <p>其它参数设置</p>
@@ -88,7 +88,7 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 <li>--delete 在rsync命令的接收方，即从目标目录中删除无关的文件；注意与--remove-source-files区别</li>
 </ul>
 <p>输出发送到文件中，命令格式如下：</p>
-<div class="highlight"><pre><span></span><code>$ rsync -a /sourcefolder /targetfolder <span class="m">1</span>&gt;/rsync.out <span class="m">2</span>&gt;/rsync.err 
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>rsync<span class="w"> </span>-a<span class="w"> </span>/sourcefolder<span class="w"> </span>/targetfolder<span class="w"> </span><span class="m">1</span>&gt;/rsync.out<span class="w"> </span><span class="m">2</span>&gt;/rsync.err<span class="w"> </span>
 </code></pre></div>
 <ul>
 <li>1&gt;将内容输出rsync.out文件</li>
@@ -99,7 +99,7 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 </code></pre></div>
 <p>远程同步
 除本地两个目录间数据同步外，rsync使用更多的场景为远程目录间进行同步，可将本地内容同步到指定IP的远程目录下，反之亦然；ssh协议下命令格式如下：</p>
-<div class="highlight"><pre><span></span><code>$ rsync -avW --progress /sourcefolder user@remote_host_ip:/targetfolder
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>rsync<span class="w"> </span>-avW<span class="w"> </span>--progress<span class="w"> </span>/sourcefolder<span class="w"> </span>user@remote_host_ip:/targetfolder
 </code></pre></div>
 <p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
 <footer>
@@ -127,6 +127,9 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -138,21 +141,18 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -166,7 +166,7 @@ $ rsync -avz --progress /sourcefolder/ /targetfolder
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

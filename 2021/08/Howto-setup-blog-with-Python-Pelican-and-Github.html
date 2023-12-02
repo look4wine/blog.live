@@ -65,21 +65,22 @@
 <h2>Pelican简单设置</h2>
 <p>Article与Page区别
 Article：Blog内容，指具体写五Blog文章内容
-Page：通常指固定不变的内容页面，比较个人说明内容； </p>
-<p>元数据：
+Page：通常指固定不变的内容页面，比较个人说明内容； 
+`
+元数据：
 指用于定义博客，进行搜索引擎优化的设置，如Blog的基本信息。
 可用Markdown语言来编辑Blog内容，格式如下：
 多个标签或作者，可以用逗号做分割
 多个作者使用authers 
 仅一个作者使用auther
 modified值是最后编辑文章的时间，默认和date相同。可以通过modified进行RSS推送，可在刚写文章的时候RSS已经推送了一遍，后来进行了修改，就可以通过modified进行再次推送。</p>
-<div class="highlight"><pre><span></span><code><span class="n">Title</span><span class="o">:</span> 
-<span class="n">Date</span><span class="o">:</span> <span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span> <span class="mi">14</span><span class="o">:</span><span class="mi">25</span>
-<span class="n">Modified</span><span class="o">:</span> <span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">15</span> <span class="mi">19</span><span class="o">:</span><span class="mi">30</span>
-<span class="n">Category</span><span class="o">:</span> <span class="n">Tech</span>
-<span class="n">Tags</span><span class="o">:</span> <span class="n">Python</span><span class="o">,</span><span class="n">Blog</span><span class="o">,</span>
-<span class="n">Slug</span><span class="o">:</span> <span class="n">Howto</span><span class="o">-</span><span class="n">supet</span><span class="o">-</span><span class="n">blog</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">Python</span><span class="o">-</span><span class="n">and</span><span class="o">-</span><span class="n">Github</span>
-<span class="n">Author</span><span class="o">:</span> <span class="err">工长</span>
+<div class="highlight"><pre><span></span><code><span class="n">Title</span><span class="o">:</span><span class="w"> </span>
+<span class="n">Date</span><span class="o">:</span><span class="w"> </span><span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">25</span>
+<span class="n">Modified</span><span class="o">:</span><span class="w"> </span><span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">19</span><span class="o">:</span><span class="mi">30</span>
+<span class="n">Category</span><span class="o">:</span><span class="w"> </span><span class="n">Tech</span>
+<span class="n">Tags</span><span class="o">:</span><span class="w"> </span><span class="n">Python</span><span class="o">,</span><span class="n">Blog</span><span class="o">,</span>
+<span class="n">Slug</span><span class="o">:</span><span class="w"> </span><span class="n">Howto</span><span class="o">-</span><span class="n">supet</span><span class="o">-</span><span class="n">blog</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">Python</span><span class="o">-</span><span class="n">and</span><span class="o">-</span><span class="n">Github</span>
+<span class="n">Author</span><span class="o">:</span><span class="w"> </span><span class="err">工长</span>
 
 <span class="n">Blog的Article页面内容部分</span>
 </code></pre></div>
@@ -117,58 +118,89 @@ markdonw格式下样例如下：
 2 公有repo，对外提供内容的publish服务，可绑定域名对接访问；
 3 私有repo中建立Action，通过Push触发，将指定内容复制到公有repo中，完成自动发布；</p>
 <p>本机新加入或编辑Article/Post的内容后，通过使用git发布：</p>
-<div class="highlight"><pre><span></span><code>$ pelican content <span class="c1"># 更新content内容</span>
-$ git add . <span class="c1"># git添加</span>
-$ git commit -am <span class="s1">'update'</span>   <span class="c1"># 加入注释内容</span>
-$ git push  <span class="c1"># 向私有repo中Push更新的内容</span>
-$ 根据系统提示，录入key完成更新
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pelican<span class="w"> </span>content<span class="w"> </span><span class="c1"># 更新content内容</span>
+$<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span><span class="c1"># git添加</span>
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s1">'update'</span><span class="w">   </span><span class="c1"># 加入注释内容</span>
+$<span class="w"> </span>git<span class="w"> </span>push<span class="w">  </span><span class="c1"># 向私有repo中Push更新的内容</span>
+$<span class="w"> </span>根据系统提示，录入key完成更新
 </code></pre></div>
 <p>自动发布，通过Action自动完成从内容源与发布版本的文件传输，约3-5分钟后线上内容完成更新，以下样例工作正常，可根据实际变化调整；</p>
-<div class="highlight"><pre><span></span><code># This is a basic workflow to help you get started with Actions
+<div class="highlight"><pre><span></span><code>#<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>basic<span class="w"> </span>workflow<span class="w"> </span>to<span class="w"> </span>help<span class="w"> </span>you<span class="w"> </span>get<span class="w"> </span>started<span class="w"> </span>with<span class="w"> </span>Actions
 
-name: CI-Publish Blog
+name:<span class="w"> </span>CI-Publish<span class="w"> </span>Blog
 
-# Controls when the workflow will run
+#<span class="w"> </span>Controls<span class="w"> </span>when<span class="w"> </span>the<span class="w"> </span>workflow<span class="w"> </span>will<span class="w"> </span>run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+<span class="w">  </span>#<span class="w"> </span>Triggers<span class="w"> </span>the<span class="w"> </span>workflow<span class="w"> </span>on<span class="w"> </span>push<span class="w"> </span>or<span class="w"> </span>pull<span class="w"> </span>request<span class="w"> </span>events<span class="w"> </span>but<span class="w"> </span>only<span class="w"> </span>for<span class="w"> </span>the<span class="w"> </span>main<span class="w"> </span>branch
+<span class="w">  </span>push:
+<span class="w">    </span>branches:<span class="w"> </span>[<span class="w"> </span>main<span class="w"> </span>]
+<span class="w">  </span>pull_request:
+<span class="w">    </span>branches:<span class="w"> </span>[<span class="w"> </span>main<span class="w"> </span>]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+<span class="w">  </span>#<span class="w"> </span>Allows<span class="w"> </span>you<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>this<span class="w"> </span>workflow<span class="w"> </span>manually<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>Actions<span class="w"> </span>tab
+<span class="w">  </span>workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+#<span class="w"> </span>A<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>is<span class="w"> </span>made<span class="w"> </span>up<span class="w"> </span>of<span class="w"> </span>one<span class="w"> </span>or<span class="w"> </span>more<span class="w"> </span>jobs<span class="w"> </span>that<span class="w"> </span>can<span class="w"> </span>run<span class="w"> </span>sequentially<span class="w"> </span>or<span class="w"> </span>in<span class="w"> </span>parallel
 jobs:
-  # This workflow contains a single job called "build"
-  # Secodn job called "publish"
-  publish: 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with: 
-        submodules: true
-    #- name: Set up Python
-    #  uses: actions/setup-python@v1
-    #  with:
-    #    python-version: '3.8'
-    #- name: Insall dependencies
-    #  run: pip install -r requirements.txt
+<span class="w">  </span>#<span class="w"> </span>This<span class="w"> </span>workflow<span class="w"> </span>contains<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>job<span class="w"> </span>called<span class="w"> </span>"build"
+<span class="w">  </span>#<span class="w"> </span>Secodn<span class="w"> </span>job<span class="w"> </span>called<span class="w"> </span>"publish"
+<span class="w">  </span>publish:<span class="w"> </span>
+<span class="w">    </span>runs-on:<span class="w"> </span>ubuntu-latest
+<span class="w">    </span>steps:
+<span class="w">    </span>-<span class="w"> </span>uses:<span class="w"> </span>actions/checkout@v2
+<span class="w">      </span>with:<span class="w"> </span>
+<span class="w">        </span>submodules:<span class="w"> </span>true
+<span class="w">    </span>#-<span class="w"> </span>name:<span class="w"> </span>Set<span class="w"> </span>up<span class="w"> </span>Python
+<span class="w">    </span>#<span class="w">  </span>uses:<span class="w"> </span>actions/setup-python@v1
+<span class="w">    </span>#<span class="w">  </span>with:
+<span class="w">    </span>#<span class="w">    </span>python-version:<span class="w"> </span>'3.8'
+<span class="w">    </span>#-<span class="w"> </span>name:<span class="w"> </span>Insall<span class="w"> </span>dependencies
+<span class="w">    </span>#<span class="w">  </span>run:<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 
-    - name: Pushes to another repository
-      uses: cpina/github-action-push-to-another-repository@main # 关键点，自用Github提供的大牛们写好的Action
-      env:
-        API_TOKEN_GITHUB: <span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>} # API_TOKEN_GITHUB, 在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用；注意setting过程使用到"Personal access tokens",该token需求提前设置好.
-      with:
-        source-directory: 'output'
-        destination-github-username: 'guthub name XXXXXXX' # github用户名
-        destination-repository-name: 'namen of repository for publlish' # 目标Repo，即对外发布用的Repo
-        user-email: XXXXXXXX@XXXXXXXX # github email
-        commit-message: Post
-        target-branch: master   
+<span class="w">    </span>-<span class="w"> </span>name:<span class="w"> </span>Pushes<span class="w"> </span>to<span class="w"> </span>another<span class="w"> </span>repository
+<span class="w">      </span>uses:<span class="w"> </span>cpina/github-action-push-to-another-repository@main<span class="w"> </span>#<span class="w"> </span>关键点，自用Github提供的大牛们写好的Action
+<span class="w">      </span>env:
+<span class="w">        </span>API_TOKEN_GITHUB:<span class="w"> </span><span class="cp">${</span><span class="p">{</span> <span class="n">secrets</span><span class="o">.</span><span class="n">API_TOKEN_GITHUB</span> <span class="cp">}</span>}<span class="w"> </span>#<span class="w"> </span>API_TOKEN_GITHUB,<span class="w"> </span>在当前Repo的Setting中设置API_TOKEN_GITHUB，本处将自动引用；注意setting过程使用到"Personal<span class="w"> </span>access<span class="w"> </span>tokens",该token需求提前设置好.
+<span class="w">      </span>with:
+<span class="w">        </span>source-directory:<span class="w"> </span>'output'
+<span class="w">        </span>destination-github-username:<span class="w"> </span>'guthub<span class="w"> </span>name<span class="w"> </span>XXXXXXX'<span class="w"> </span>#<span class="w"> </span>github用户名
+<span class="w">        </span>destination-repository-name:<span class="w"> </span>'namen<span class="w"> </span>of<span class="w"> </span>repository<span class="w"> </span>for<span class="w"> </span>publlish'<span class="w"> </span>#<span class="w"> </span>目标Repo，即对外发布用的Repo
+<span class="w">        </span>user-email:<span class="w"> </span>XXXXXXXX@XXXXXXXX<span class="w"> </span>#<span class="w"> </span>github<span class="w"> </span>email
+<span class="w">        </span>commit-message:<span class="w"> </span>Post
+<span class="w">        </span>target-branch:<span class="w"> </span>master<span class="w">   </span>
 </code></pre></div>
 <p>output目录下加入CNAME文件，内容为定制化的域名(Custom Domain)，否则每次push后，会修改为Github repo默认的URL进行访问。</p>
+<p>错误处理</p>
+<div class="highlight"><pre><span></span><code><span class="n">pelican</span> <span class="n">content</span>
+
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib</span><span class="se">\r</span><span class="s2">unpy.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">193</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_run_module_as_main</span>
+    <span class="s2">"__main__"</span><span class="p">,</span> <span class="n">mod_spec</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib</span><span class="se">\r</span><span class="s2">unpy.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">85</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_run_code</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">run_globals</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\Scripts\pelican.exe\__main__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">5</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\pelican\__init__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">19</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">from</span> <span class="nn">pelican.generators</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ArticlesGenerator</span><span class="p">,</span>  <span class="c1"># noqa: I100</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\pelican\generators.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">17</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">from</span> <span class="nn">pelican.readers</span> <span class="kn">import</span> <span class="n">Readers</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\pelican</span><span class="se">\r</span><span class="s2">eaders.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">23</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">from</span> <span class="nn">markdown</span> <span class="kn">import</span> <span class="n">Markdown</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\markdown\__init__.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">29</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">markdown</span><span class="p">,</span> <span class="n">markdownFromFile</span>  <span class="c1"># noqa: E402</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\markdown\core.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">26</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">util</span>
+  <span class="n">File</span> <span class="s2">"D:\Program Files (x86)\Python\Python37\lib\site-packages\markdown\util.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">87</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">INSTALLED_EXTENSIONS</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">entry_points</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'markdown.extensions'</span><span class="p">,</span> <span class="p">())</span>
+<span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">'EntryPoints'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">'get'</span>
+</code></pre></div>
+<p>检查运行python环境中importlib-metadata库的版本为6.6.0；其它模块升级后引起的版本不兼容问题，重新安装低版本importlib-metadata即可；尝试了5.0.0版本，兼容问题依旧，更改为importlib-metadata=4.13.0解决。</p>
+<div class="highlight"><pre><span></span><code>pip list | findstr "importlib"
+importlib-metadata        6.6.0
+importlib-resources       5.4.0
+
+更新
+pip install importlib-metadata==4.13.0
+</code></pre></div>
 <h2>Links:</h2>
 <ul>
 <li><em>Ref Link:</em> <a href="https://github.com/look4wine/pelican-octopress-theme" target="_blank">https://github.com/look4wine/pelican-octopress-theme</a></li>
@@ -201,6 +233,9 @@ jobs:
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -212,21 +247,18 @@ jobs:
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -240,7 +272,7 @@ jobs:
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

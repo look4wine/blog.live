@@ -69,25 +69,25 @@
 <p>如Pelican Theme无法解析GA，可修改Theme中base.html文件，在<head>部分添加以下内容</head></p>
 <p><img alt="Global site tag (gtag.js) " src="https://www.kovlala.fun/images/202108_ga2.png"/></p>
 <div class="highlight"><pre><span></span><code><span class="cp">{%</span> <span class="k">if</span> <span class="nv">GOOGLE_ANALYTICS</span> <span class="cp">%}</span>
-<span class="c">&lt;!-- Global site tag (gtag.js) - Google Analytics --&gt;</span>
-<span class="nt">&lt;script</span> <span class="err">async</span> <span class="na">src=</span><span class="s">"https://www.googletagmanager.com/gtag/js?id=</span><span class="cp">{{</span><span class="nv">GOOGLE_ANALYTICS</span><span class="cp">}}</span><span class="s">"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="cm">&lt;!-- Global site tag (gtag.js) - Google Analytics --&gt;</span>
+<span class="nt">&lt;script</span><span class="w"> </span><span class="err">async</span><span class="w"> </span><span class="na">src=</span><span class="s">"https://www.googletagmanager.com/gtag/js?id=</span><span class="cp">{{</span><span class="nv">GOOGLE_ANALYTICS</span><span class="cp">}}</span><span class="s">"</span><span class="nt">&gt;&lt;/script&gt;</span>
 <span class="nt">&lt;script&gt;</span>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<span class="w">  </span>window.dataLayer<span class="w"> </span>=<span class="w"> </span>window.dataLayer<span class="w"> </span>||<span class="w"> </span>[];
+<span class="w">  </span>function<span class="w"> </span>gtag(){dataLayer.push(arguments);}
+<span class="w">  </span>gtag('js',<span class="w"> </span>new<span class="w"> </span>Date());
 
-  gtag('config', '<span class="cp">{{</span><span class="nv">GOOGLE_ANALYTICS</span><span class="cp">}}</span>');
+<span class="w">  </span>gtag('config',<span class="w"> </span>'<span class="cp">{{</span><span class="nv">GOOGLE_ANALYTICS</span><span class="cp">}}</span>');
 <span class="nt">&lt;/script&gt;</span>
 <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
 </code></pre></div>
 <p>GOOGLE_ANALYTICS的值将被自动替换，在页面端生产以下代码</p>
-<div class="highlight"><pre><span></span><code><span class="c">&lt;!-- Global site tag (gtag.js) - Google Analytics --&gt;</span>
-<span class="nt">&lt;script</span> <span class="err">async</span> <span class="na">src=</span><span class="s">"https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- Global site tag (gtag.js) - Google Analytics --&gt;</span>
+<span class="nt">&lt;script</span><span class="w"> </span><span class="err">async</span><span class="w"> </span><span class="na">src=</span><span class="s">"https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"</span><span class="nt">&gt;&lt;/script&gt;</span>
 <span class="nt">&lt;script&gt;</span>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-D6P0W94D3K');
+<span class="w">  </span>window.dataLayer<span class="w"> </span>=<span class="w"> </span>window.dataLayer<span class="w"> </span>||<span class="w"> </span>[];
+<span class="w">  </span>function<span class="w"> </span>gtag(){dataLayer.push(arguments);}
+<span class="w">  </span>gtag('js',<span class="w"> </span>new<span class="w"> </span>Date());
+<span class="w">  </span>gtag('config',<span class="w"> </span>'G-D6P0W94D3K');
 <span class="nt">&lt;/script&gt;</span>
 </code></pre></div>
 <p>设置完成，更新线上Pelican的Article，约0.5小时后可登录GA后台查看结果。</p>
@@ -121,6 +121,9 @@
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -132,21 +135,18 @@
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -160,7 +160,7 @@
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

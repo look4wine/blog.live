@@ -60,72 +60,72 @@
 </header>
 <div class="entry-content"><p>PVE做为宿主机，安装了OpenMediaVault系统，分配宿主机硬盘作为OMV资源盘使用；由于硬件配置原因，准备升级平台，想通过宿主机挂载OMV镜像文件，直接备份数据，记录操作方式如下</p>
 <p>对于qcow2格式的镜像文件，需要使用 <strong>qemu-nbd</strong> 这个工具，通常PVE系统中这个工具会默认安装； 可通过以下命令检查；</p>
-<div class="highlight"><pre><span></span><code>$ qemu-nbd --version
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>qemu-nbd<span class="w"> </span>--version
 
-qemu-nbd <span class="m">5</span>.2.0 <span class="o">(</span>pve-qemu-kvm_5.2.0<span class="o">)</span>
-Written by Anthony Liguori.
+qemu-nbd<span class="w"> </span><span class="m">5</span>.2.0<span class="w"> </span><span class="o">(</span>pve-qemu-kvm_5.2.0<span class="o">)</span>
+Written<span class="w"> </span>by<span class="w"> </span>Anthony<span class="w"> </span>Liguori.
 
-Copyright <span class="o">(</span>c<span class="o">)</span> <span class="m">2003</span>-2020 Fabrice Bellard and the QEMU Project developers
-This is free software<span class="p">;</span> see the <span class="nb">source</span> <span class="k">for</span> copying conditions.  There is NO
-warranty<span class="p">;</span> not even <span class="k">for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Copyright<span class="w"> </span><span class="o">(</span>c<span class="o">)</span><span class="w"> </span><span class="m">2003</span>-2020<span class="w"> </span>Fabrice<span class="w"> </span>Bellard<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>QEMU<span class="w"> </span>Project<span class="w"> </span>developers
+This<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software<span class="p">;</span><span class="w"> </span>see<span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>copying<span class="w"> </span>conditions.<span class="w">  </span>There<span class="w"> </span>is<span class="w"> </span>NO
+warranty<span class="p">;</span><span class="w"> </span>not<span class="w"> </span>even<span class="w"> </span><span class="k">for</span><span class="w"> </span>MERCHANTABILITY<span class="w"> </span>or<span class="w"> </span>FITNESS<span class="w"> </span>FOR<span class="w"> </span>A<span class="w"> </span>PARTICULAR<span class="w"> </span>PURPOSE.
 </code></pre></div>
 <p>如qemu-nbd命令无效，可通过以下方式安装</p>
 <ol>
 <li>安装软件包 qemu-utils；</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ apt-get update
-$ apt-get install qemu-utils
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>apt-get<span class="w"> </span>update
+$<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>qemu-utils
 </code></pre></div>
 <ol>
 <li>开启 nbd</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ modprobe nbd <span class="nv">max_part</span><span class="o">=</span><span class="m">4</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>modprobe<span class="w"> </span>nbd<span class="w"> </span><span class="nv">max_part</span><span class="o">=</span><span class="m">4</span>
 </code></pre></div>
 <ol>
 <li>在宿主系统中首先挂载虚拟机所在磁盘分区，挂载后可定位到镜像文件对应的qcow2文件所在目录，如本例中</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ mount /dev/sdd1 /media/folderd
-$ ls /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mount<span class="w"> </span>/dev/sdd1<span class="w"> </span>/media/folderd
+$<span class="w"> </span>ls<span class="w"> </span>/media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
 </code></pre></div>
 <ol>
 <li>连接VM中的镜像qcow2文件到nbdX，可通过fdisk -l 查询结果</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ ls /dev/nbd*
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ls<span class="w"> </span>/dev/nbd*
 
-/dev/nbd0   /dev/nbd11  /dev/nbd14  /dev/nbd2p1  /dev/nbd5  /dev/nbd8
-/dev/nbd1   /dev/nbd12  /dev/nbd15  /dev/nbd3    /dev/nbd6  /dev/nbd9
-/dev/nbd10  /dev/nbd13  /dev/nbd2   /dev/nbd4    /dev/nbd7
+/dev/nbd0<span class="w">   </span>/dev/nbd11<span class="w">  </span>/dev/nbd14<span class="w">  </span>/dev/nbd2p1<span class="w">  </span>/dev/nbd5<span class="w">  </span>/dev/nbd8
+/dev/nbd1<span class="w">   </span>/dev/nbd12<span class="w">  </span>/dev/nbd15<span class="w">  </span>/dev/nbd3<span class="w">    </span>/dev/nbd6<span class="w">  </span>/dev/nbd9
+/dev/nbd10<span class="w">  </span>/dev/nbd13<span class="w">  </span>/dev/nbd2<span class="w">   </span>/dev/nbd4<span class="w">    </span>/dev/nbd7
 
 从nbd0-nbd15，任选一个设备进行使用，本例中使用/dev/nbd2
 
-$ qemu-nbd --connect<span class="o">=</span>/dev/nbd2 /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+$<span class="w"> </span>qemu-nbd<span class="w"> </span>--connect<span class="o">=</span>/dev/nbd2<span class="w"> </span>/media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
 或
-$ qemu-nbd -c /dev/nbd2 /media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
+$<span class="w"> </span>qemu-nbd<span class="w"> </span>-c<span class="w"> </span>/dev/nbd2<span class="w"> </span>/media/folderd/nas_sdb1/images/100/vm-100-disk-1.qcow2
 
-$ fdisk -l /dev/nbd2
+$<span class="w"> </span>fdisk<span class="w"> </span>-l<span class="w"> </span>/dev/nbd2
 
-Disk /dev/nbd2: <span class="m">933</span> GiB, <span class="m">1001801121792</span> bytes, <span class="m">1956642816</span> sectors
-Units: sectors of <span class="m">1</span> * <span class="nv">512</span> <span class="o">=</span> <span class="m">512</span> bytes
-Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
-I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: <span class="m">512</span> bytes / <span class="m">512</span> bytes
-Disklabel type: gpt
+Disk<span class="w"> </span>/dev/nbd2:<span class="w"> </span><span class="m">933</span><span class="w"> </span>GiB,<span class="w"> </span><span class="m">1001801121792</span><span class="w"> </span>bytes,<span class="w"> </span><span class="m">1956642816</span><span class="w"> </span>sectors
+Units:<span class="w"> </span>sectors<span class="w"> </span>of<span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span><span class="nv">512</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">512</span><span class="w"> </span>bytes
+Sector<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>logical/physical<span class="o">)</span>:<span class="w"> </span><span class="m">512</span><span class="w"> </span>bytes<span class="w"> </span>/<span class="w"> </span><span class="m">512</span><span class="w"> </span>bytes
+I/O<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>minimum/optimal<span class="o">)</span>:<span class="w"> </span><span class="m">512</span><span class="w"> </span>bytes<span class="w"> </span>/<span class="w"> </span><span class="m">512</span><span class="w"> </span>bytes
+Disklabel<span class="w"> </span>type:<span class="w"> </span>gpt
 </code></pre></div>
 <ol>
 <li>挂载nbd2设置到系统文件中，正常 Mount分区后可进行读写等操作，如通过rsync备份数据；</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ mount /dev/nbd2p1 /media/s1
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mount<span class="w"> </span>/dev/nbd2p1<span class="w"> </span>/media/s1
 </code></pre></div>
 <ol>
 <li>使用完成后的卸载方式与顺序，先卸载本系统中分区，然后卸载镜像磁盘；</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ umount /media/s1
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>umount<span class="w"> </span>/media/s1
 
-$ qemu-nbd --disconnect /dev/nbd2
+$<span class="w"> </span>qemu-nbd<span class="w"> </span>--disconnect<span class="w"> </span>/dev/nbd2
 或
-$ qemu-nbd -d /dev/nbd2
+$<span class="w"> </span>qemu-nbd<span class="w"> </span>-d<span class="w"> </span>/dev/nbd2
 </code></pre></div>
 <p>如挂载NTFS分区，需在Step5前增加如下操作，即NTFS对应安装ntfs-3g文件系统后，再挂载；</p>
-<div class="highlight"><pre><span></span><code>$ apt-get install ntfs-3g
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ntfs-3g
 </code></pre></div>
 <p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
 <footer>
@@ -153,6 +153,9 @@ $ qemu-nbd -d /dev/nbd2
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -164,21 +167,18 @@ $ qemu-nbd -d /dev/nbd2
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -192,7 +192,7 @@ $ qemu-nbd -d /dev/nbd2
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

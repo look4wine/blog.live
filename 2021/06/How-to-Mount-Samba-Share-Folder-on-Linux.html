@@ -64,52 +64,52 @@
 <ol>
 <li>安装软件包 samclient， cifs-utils，未安装cifs无法Mount cifs目录；</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ apt-get update
-$ apt-get install smbclient
-$ apt-get install cifs-utils
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>apt-get<span class="w"> </span>update
+$<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>smbclient
+$<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>cifs-utils
 </code></pre></div>
 <ol>
 <li>运行以下命令，按提示输入用户密码，查询指定IP及用户权限下可供访问的共享文件夹</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ smbclient -U username -L <span class="m">192</span>.168.5.241
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>smbclient<span class="w"> </span>-U<span class="w"> </span>username<span class="w"> </span>-L<span class="w"> </span><span class="m">192</span>.168.5.241
 </code></pre></div>
 <p>结果如下：</p>
-<div class="highlight"><pre><span></span><code><span class="nv">Enter</span> <span class="nv">WORKGROUP</span>\<span class="nv">XXX</span><span class="s1">'</span><span class="s">s password:</span>
+<div class="highlight"><pre><span></span><code><span class="nv">Enter</span><span class="w"> </span><span class="nv">WORKGROUP</span>\<span class="nv">XXX</span><span class="err">'s password:</span>
 
-        <span class="nv">Sharename</span>       <span class="nv">Type</span>      <span class="nv">Comment</span>
-        <span class="o">---------</span>       <span class="o">----</span>      <span class="o">-------</span>
-        <span class="nv">nas</span>             <span class="nv">Disk</span>
-        <span class="nv">nas_sdb1</span>        <span class="nv">Disk</span>
-        <span class="nv">IPC</span>$            <span class="nv">IPC</span>       <span class="nv">IPC</span> <span class="nv">Service</span> <span class="ss">(</span><span class="nv">OMV</span> <span class="nv">server</span><span class="ss">)</span>
-<span class="nv">Reconnecting</span> <span class="nv">with</span> <span class="nv">SMB1</span> <span class="k">for</span> <span class="nv">workgroup</span> <span class="nv">listing</span>.
+<span class="err">        Sharename       Type      Comment</span>
+<span class="err">        ---------       ----      -------</span>
+<span class="err">        nas             Disk</span>
+<span class="err">        nas_sdb1        Disk</span>
+<span class="err">        IPC$            IPC       IPC Service (OMV server)</span>
+<span class="err">Reconnecting with SMB1 for workgroup listing.</span>
 
-        <span class="nv">Server</span>               <span class="nv">Comment</span>
-        <span class="o">---------</span>            <span class="o">-------</span>
+<span class="err">        Server               Comment</span>
+<span class="err">        ---------            -------</span>
 
-        <span class="nv">Workgroup</span>            <span class="nv">Master</span>
-        <span class="o">---------</span>            <span class="o">-------</span>
-        <span class="nv">WORKGROUP</span>            <span class="nv">OMV</span>
+<span class="err">        Workgroup            Master</span>
+<span class="err">        ---------            -------</span>
+<span class="err">        WORKGROUP            OMV</span>
 </code></pre></div>
 <ol>
 <li>列出无须密码可以访问的目录及文件</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ smbclient -L //192.168.5.241 -N
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>smbclient<span class="w"> </span>-L<span class="w"> </span>//192.168.5.241<span class="w"> </span>-N
 </code></pre></div>
 <ol>
 <li>确定要接入的共享文件夹名称，如：nas或nas_sdb1，运行以下命令，将远程Samba协议的共享文件夹mount到本地目录下，成功后可在本地自由访问</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ mkdir /media/folder1
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mkdir<span class="w"> </span>/media/folder1
 
-$ mount -t cifs -o <span class="nv">username</span><span class="o">=</span>username //192.168.5.241/nas /media/folder1
+$<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>cifs<span class="w"> </span>-o<span class="w"> </span><span class="nv">username</span><span class="o">=</span>username<span class="w"> </span>//192.168.5.241/nas<span class="w"> </span>/media/folder1
 或
-$ mount -t cifs -o <span class="nv">username</span><span class="o">=</span>username, <span class="nv">password</span><span class="o">=</span>validpassword //192.168.5.241/nas /media/folder1
+$<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>cifs<span class="w"> </span>-o<span class="w"> </span><span class="nv">username</span><span class="o">=</span>username,<span class="w"> </span><span class="nv">password</span><span class="o">=</span>validpassword<span class="w"> </span>//192.168.5.241/nas<span class="w"> </span>/media/folder1
 </code></pre></div>
 <p>按提示输入password, 回车完成Mount，无错误信息则Mount成功；</p>
 <p>切换到/media/folder1目录下查看或进行正常操作。</p>
 <ol>
 <li>匿名访问文件共享目录</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$ mount -t cifs //192.168.5.241/path-to-share /media/path-to-mount
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>cifs<span class="w"> </span>//192.168.5.241/path-to-share<span class="w"> </span>/media/path-to-mount
 </code></pre></div>
 <p><em>Ref Link1:</em> <a href="https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/" target="_blank">https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/</a></p>
 <p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
@@ -138,6 +138,9 @@ $ mount -t cifs -o <span class="nv">username</span><span class="o">=</span>usern
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -149,21 +152,18 @@ $ mount -t cifs -o <span class="nv">username</span><span class="o">=</span>usern
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -177,7 +177,7 @@ $ mount -t cifs -o <span class="nv">username</span><span class="o">=</span>usern
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

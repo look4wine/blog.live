@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8"/>
+<title>Docker下部署OpenWrt操作记录 — 自在工坊</title>
+<meta content="工长" name="author"/>
+<link href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html" rel="canonical"/>
+<meta content="自在工坊" property="og:site_name">
+<meta content="article" property="og:type">
+<meta content="Docker下部署OpenWrt操作记录" property="og:title"/>
+<meta content="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html" property="og:url"/>
+<meta content="Install an Openwrt container in Docker hosted on Debian version 11. 升级了OpenMediaVault系统到6.9.8-1 (Shaitan)，通过omv-extras安装了Docker 20.10.21版本；准备将通过PVE运行的OpenWrt系统切换到Docker中运行 …" property="og:description"/>
+<meta content="2023-11-29 20:25:00+08:00" property="article:published_time"/>
+<meta content="2023-11-29 20:25:00+08:00" property="article:modified_time"/>
+<!-- http://t.co/dKP3o1e -->
+<meta content="True" name="HandheldFriendly"/>
+<meta content="320" name="MobileOptimized"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="https://www.kovlala.fun/favicon.png" rel="icon"/>
+<link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
+<script src="https://www.kovlala.fun/theme/js/ender.js"></script>
+<script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  gtag('config', 'G-D6P0W94D3K');
+  </script>
+</meta></meta><link href="https://www.kovlala.fun\2023/11/Howto-Setup-OpenWrt-in-Docker.html" rel="canonical"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "自在工坊", "item": "https://www.kovlala.fun"}, {"@type": "ListItem", "position": 2, "name": "2023", "item": "https://www.kovlala.fun\\2023"}, {"@type": "ListItem", "position": 3, "name": "11", "item": "https://www.kovlala.fun\\2023/11"}, {"@type": "ListItem", "position": 4, "name": "Howto setup openwrt in docker", "item": "https://www.kovlala.fun\\2023/11/Howto-Setup-OpenWrt-in-Docker.html"}]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Person", "name": "工长"}, "publisher": {"@type": "Organization", "name": "自在工坊"}, "headline": "Docker下部署OpenWrt操作记录", "about": "Tech", "datePublished": "2023-11-29 20:25"}</script></head>
+<body>
+<header role="banner">
+<hgroup>
+<h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
+<h2>走在代码边缘</h2>
+</hgroup></header>
+<nav role="navigation"><ul class="subscription" data-subscription="rss">
+</ul>
+<ul class="main-navigation">
+<li><a href="https://www.kovlala.fun">Blog</a></li>
+<li><a href="/category/tech.html">Tech</a></li>
+</ul></nav>
+<div id="main">
+<div id="content">
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Docker下部署OpenWrt操作记录</h1>
+<p class="meta">
+<time datetime="2023-11-29T20:25:00+08:00" pubdate="">周三 29 十一月 2023</time>
+</p>
+</header>
+<div class="entry-content"><p>Install an Openwrt container in Docker hosted on Debian version 11. </p>
+<p>升级了OpenMediaVault系统到6.9.8-1 (Shaitan)，通过omv-extras安装了Docker 20.10.21版本；准备将通过PVE运行的OpenWrt系统切换到Docker中运行，使用旁路由模式支持内网中其它设备使用。记录下操作流程，方便日后使用。</p>
+<h2>当前网络设置</h2>
+<ul>
+<li>网络：           192.168.5.0/24</li>
+<li>主路由器（网关）：192.168.5.1</li>
+<li>子网掩码:         255.255.255.0 </li>
+<li>OpenWRT的IP：       192.168.5.91</li>
+</ul>
+<p>可通过现有主路由器查看以上设置信息</p>
+<h2>Step1:拉取Openwrt Image文件</h2>
+<p>这里使用的是以下版；可选择其它版本；</p>
+<div class="highlight"><pre><span></span><code>docker pull sulinggg/openwrt:x86_64
+docker images
+
+REPOSITORY                TAG       IMAGE ID       CREATED         SIZE
+sulinggg/openwrt          x86_64    3d9db27509a6   7 months ago    223MB
+</code></pre></div>
+<h2>Step2:打开OMV物理机网卡的混杂模式</h2>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ip<span class="w"> </span>addr<span class="w"> </span>
+查看当前物理网卡：enp1s0为当前系统使用的网卡名称
+
+ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>enp1s0<span class="w"> </span>promisc<span class="w"> </span>on
+ip<span class="w"> </span>link<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>enp1s0
+<span class="m">2</span>:<span class="w"> </span>enp1s0:<span class="w"> </span>&lt;BROADCAST,MULTICAST,PROMISC,UP,LOWER_UP&gt;<span class="w"> </span>mtu<span class="w"> </span><span class="m">1500</span><span class="w"> </span>qdisc<span class="w"> </span>fq_codel<span class="w"> </span>state<span class="w"> </span>UP<span class="w"> </span>mode<span class="w"> </span>DEFAULT<span class="w"> </span>group<span class="w"> </span>default<span class="w"> </span>qlen<span class="w"> </span><span class="m">1000</span>
+
+简单的讲,混杂模式就是指网卡能接受所有通过它的数据流，不管是什么格式，什么地址的
+</code></pre></div>
+<h2>Step3:创建一个为OpenWrt专用的Docker网络</h2>
+<p>设置中需要为OpenWrt分配IP地址，需要先配置出虚拟网卡，Docker中使用macvlan完成虚拟网卡设置，增加一个macvlan模式的网卡，子网和网关根据前述网络信息设置。</p>
+<div class="highlight"><pre><span></span><code>docker network create --driver macvlan --subnet=192.168.5.0/24 --gateway=192.168.5.1 -o parent=enp1s0 macnet
+
+docker network ls
+a94c8f7268xx   macnet                macvlan   local
+</code></pre></div>
+<h2>Step4:运行openwrt容器</h2>
+<p>创建容器并运行openwrt容器，注意网络ip与现有网络设备无冲突</p>
+<div class="highlight"><pre><span></span><code>docker run -d \
+--restart always \
+--network macnet \
+--ip 192.168.5.91 \
+--privileged \
+--name openwrt \
+sulinggg/openwrt:x86_64 /sbin/init
+
+docker ps 
+
+CONTAINER ID   IMAGE                     COMMAND            CREATED        STATUS       PORTS   NAMES
+9541f2ff6822   sulinggg/openwrt:x86_64   "/sbin/init"       3 hours ago    Up 3 hours           openwrt
+</code></pre></div>
+<h2>Step5: 进入容器完成网络设置</h2>
+<div class="highlight"><pre><span></span><code><span class="nv">docker</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="o">-</span><span class="nv">it</span><span class="w"> </span><span class="nv">openwrt</span><span class="w"> </span><span class="nv">bash</span>
+或
+<span class="nv">docker</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="o">-</span><span class="nv">it</span><span class="w"> </span><span class="nv">openwrt</span><span class="w"> </span><span class="nv">sh</span>
+</code></pre></div>
+<p>编辑网络配置， 修改lan部分的设置，替换lan网络配置如下：</p>
+<div class="highlight"><pre><span></span><code><span class="nx">config</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="err">'</span><span class="nx">lan</span><span class="err">'</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="err">'</span><span class="nx">bridge</span><span class="err">'</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">ifname</span><span class="w"> </span><span class="err">'</span><span class="nx">eth0</span><span class="err">'</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">proto</span><span class="w"> </span><span class="err">'</span><span class="nx">static</span><span class="err">'</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">ipaddr</span><span class="w"> </span><span class="err">'</span><span class="m m-Double">192.168.5.9</span><span class="mi">1</span><span class="err">'</span><span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">为</span><span class="w"> </span><span class="nx">openwrt</span><span class="w"> </span><span class="nx">设置</span><span class="w"> </span><span class="nx">ip</span><span class="w"> </span><span class="nx">地址</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">netmask</span><span class="w"> </span><span class="err">'</span><span class="m m-Double">255.255.255.0</span><span class="err">'</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nx">子网掩码</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">gateway</span><span class="w"> </span><span class="err">'</span><span class="m m-Double">192.168.5.1</span><span class="err">'</span><span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="nx">网关</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">broadcast</span><span class="w"> </span><span class="err">'</span><span class="m m-Double">192.168.5.2</span><span class="mi">55</span><span class="err">'</span>
+<span class="w">        </span><span class="nx">option</span><span class="w"> </span><span class="nx">dns</span><span class="w"> </span><span class="err">'</span><span class="m m-Double">119.29.29.2</span><span class="mi">9</span><span class="err">'</span><span class="w">       </span><span class="err">#</span><span class="w"> </span><span class="nx">DNS</span><span class="p">,</span><span class="nx">根据实际情况设置</span>
+</code></pre></div>
+<p>通过vi进入编辑，保存后退出</p>
+<div class="highlight"><pre><span></span><code>vim /etc/config/network
+</code></pre></div>
+<h2>Step6:重启网络</h2>
+<p>重启容器内网络</p>
+<div class="highlight"><pre><span></span><code>/etc/init.d/network restart
+</code></pre></div>
+<p>网络重启后，openwrt已经部署完成，可以通过浏览器访问openwrt的IP（本例为192.168.5.91）访问系统的Web操作界面；默认用户如下，登录后可修改； 
+- 默认账号：root
+- 默认密码：password</p>
+<h2>Step7:Openwrt旁路由设置</h2>
+<p>Openwrt旁路由设置，主要有以下三个方式，可根据实际网络需求设置；</p>
+<ol>
+<li>修改主路由dhcp配置，将其下发网关与DNS改为openwrt设备的ip地址</li>
+<li>关闭主路由dhcp服务，打开openwrt设备dhcp服务，由openwrt管理网络中设备的ip地址分配</li>
+<li>手工直接修改各设备上的网络信息，使用Openwrt做为DNS解析的设备，不推荐使用</li>
+</ol>
+<h2>Links:</h2>
+<ul>
+<li>
+<p><em>Ref Link:</em> <a href="https://www.szxiot.com/2023/02/23/deploy-openwrt-with-docker/" target="_blank">https://www.szxiot.com/2023/02/23/deploy-openwrt-with-docker/</a></p>
+</li>
+<li>
+<p><em>Ref Link:</em> <a href="https://blog.gavinzh.com/2022/03/28/Docker-OpenWrt-Side-Route-Installation-Tutorial/" target="_blank">https://blog.gavinzh.com/2022/03/28/Docker-OpenWrt-Side-Route-Installation-Tutorial/</a></p>
+</li>
+</ul>
+<p>================================</p>
+<p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
+<footer>
+<p class="meta">
+<span class="byline author vcard">
+    Posted by <span class="fn">
+        工长
+    </span>
+</span>
+<time datetime="2023-11-29T20:25:00+08:00" pubdate="">周三 29 十一月 2023</time> <span class="categories">
+<a class="category" href="https://www.kovlala.fun/category/tech.html">Tech</a>
+</span>
+<span class="categories">
+<a class="category" href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a class="category" href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a class="category" href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a class="category" href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a> </span>
+</p><div class="sharing">
+</div> </footer>
+</article>
+<section>
+<h1>Comments</h1>
+<div aria-live="polite" id="disqus_thread"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+</section>
+</div>
+<aside class="sidebar">
+<section>
+<h1>Recent Posts</h1>
+<ul id="recent_posts">
+<li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
+</li>
+<li class="post">
+<a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
+</li>
+</ul>
+</section><section>
+<h1>Categories</h1>
+<ul id="recent_posts">
+<li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
+<li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
+</ul>
+</section>
+<section>
+<h1>Tags</h1>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<section>
+<h1>Blogroll</h1>
+<ul>
+<li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
+<li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
+<li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
+</ul>
+</section>
+</aside>
+</div>
+</div>
+<footer role="contentinfo">
+<p>
+    Copyright ©  2021–2023  工长 —
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p> </footer>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'G-D6P0W94D3K']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'G-D6P0W94D3K');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var disqus_shortname = 'kovlala';
+          var disqus_identifier = '/2023/11/Howto-Setup-OpenWrt-in-Docker.html';
+    var disqus_url = 'https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html';
+    var disqus_title = 'Docker下部署OpenWrt操作记录';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

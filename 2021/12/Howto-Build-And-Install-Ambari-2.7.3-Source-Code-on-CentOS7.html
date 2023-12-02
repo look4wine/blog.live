@@ -76,58 +76,58 @@
 <li>git</li>
 <li>python-devel</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ yum install -y wget, curl
-$ yum install -y rpm-build
-$ yum install -y gcc-c++
-$ yum install -y git python-devel rpm-build gcc-c++
-$ yum install -y npm
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>wget,<span class="w"> </span>curl
+$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>rpm-build
+$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>gcc-c++
+$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>git<span class="w"> </span>python-devel<span class="w"> </span>rpm-build<span class="w"> </span>gcc-c++
+$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>npm
 </code></pre></div>
 <h2>Step2: Update Maven and edit Maven config with two mirrors for repository</h2>
 <p>Maven升级， Centos7默认安装为3.0版本，Ambari2.7编译需要3.3.9版本以下，升级Maven</p>
-<div class="highlight"><pre><span></span><code>$ yum install maven <span class="c1"># 安装默认版本</span>
-$ yum erase maven <span class="c1"># 删除已安装版本</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>maven<span class="w"> </span><span class="c1"># 安装默认版本</span>
+$<span class="w"> </span>yum<span class="w"> </span>erase<span class="w"> </span>maven<span class="w"> </span><span class="c1"># 删除已安装版本</span>
 </code></pre></div>
 <p>下载Maven，修改系统设置</p>
-<div class="highlight"><pre><span></span><code>$ wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-$ tar -xvf  apache-maven-3.3.9-bin.tar.gz
-$ mv -f apache-maven-3.3.9 /usr/local/
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>wget<span class="w"> </span>http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+$<span class="w"> </span>tar<span class="w"> </span>-xvf<span class="w">  </span>apache-maven-3.3.9-bin.tar.gz
+$<span class="w"> </span>mv<span class="w"> </span>-f<span class="w"> </span>apache-maven-3.3.9<span class="w"> </span>/usr/local/
 
 <span class="c1"># 编辑/etc/profile文件，在文件末尾添加如下代码：</span>
 
-$ vi /etc/profile
-$ <span class="nb">export</span> <span class="nv">MAVEN_HOME</span><span class="o">=</span>/usr/local/apache-maven-3.3.9 <span class="c1"># maven 目录</span>
-$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}</span>:<span class="si">${</span><span class="nv">MAVEN_HOME</span><span class="si">}</span>/bin
-$ <span class="nb">source</span> /etc/profile <span class="c1"># 设置生效</span>
-$ mvn -v
+$<span class="w"> </span>vi<span class="w"> </span>/etc/profile
+$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">MAVEN_HOME</span><span class="o">=</span>/usr/local/apache-maven-3.3.9<span class="w"> </span><span class="c1"># maven 目录</span>
+$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}</span>:<span class="si">${</span><span class="nv">MAVEN_HOME</span><span class="si">}</span>/bin
+$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/etc/profile<span class="w"> </span><span class="c1"># 设置生效</span>
+$<span class="w"> </span>mvn<span class="w"> </span>-v
 </code></pre></div>
 <p>将Maven中config设置修改为以下，提升各类包下载速度；镜像1中心源，镜像2为中心以外的其它Package下载；
 正常科学上网的环境下，整个安装过程中全部第三方Package均可正常下载。</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;settings&gt;</span>
-  <span class="nt">&lt;mirrors&gt;</span>
-    <span class="nt">&lt;mirror&gt;</span>
-      <span class="nt">&lt;id&gt;</span>huaweicloud<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
-      <span class="nt">&lt;url&gt;</span>https://mirrors.huaweicloud.com/repository/maven/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;/mirror&gt;</span>
+<span class="w">  </span><span class="nt">&lt;mirrors&gt;</span>
+<span class="w">    </span><span class="nt">&lt;mirror&gt;</span>
+<span class="w">      </span><span class="nt">&lt;id&gt;</span>huaweicloud<span class="nt">&lt;/id&gt;</span>
+<span class="w">      </span><span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="w">      </span><span class="nt">&lt;url&gt;</span>https://mirrors.huaweicloud.com/repository/maven/<span class="nt">&lt;/url&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/mirror&gt;</span>
 
-    <span class="nt">&lt;mirror&gt;</span>
-      <span class="nt">&lt;id&gt;</span>nexus-hortonworks<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;mirrorOf&gt;</span>*,!central<span class="nt">&lt;/mirrorOf&gt;</span>
-      <span class="nt">&lt;name&gt;</span>Nexus hortonworks<span class="nt">&lt;/name&gt;</span>
-      <span class="nt">&lt;url&gt;</span>https://repo.hortonworks.com/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;/mirror&gt;</span>
-  <span class="nt">&lt;/mirrors&gt;</span>
+<span class="w">    </span><span class="nt">&lt;mirror&gt;</span>
+<span class="w">      </span><span class="nt">&lt;id&gt;</span>nexus-hortonworks<span class="nt">&lt;/id&gt;</span>
+<span class="w">      </span><span class="nt">&lt;mirrorOf&gt;</span>*,!central<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="w">      </span><span class="nt">&lt;name&gt;</span>Nexus<span class="w"> </span>hortonworks<span class="nt">&lt;/name&gt;</span>
+<span class="w">      </span><span class="nt">&lt;url&gt;</span>https://repo.hortonworks.com/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/mirror&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/mirrors&gt;</span>
 <span class="nt">&lt;/settings&gt;</span>
 </code></pre></div>
 <h2>Step3: Download Ambari-2.7.6</h2>
 <p>下载Ambari-2.7.6版本，准备编译工作</p>
-<div class="highlight"><pre><span></span><code>$ wget https://www-eu.apache.org/dist/ambari/ambari-2.7.6/apache-ambari-2.7.6-src.tar.gz 
-$ tar xfvz apache-ambari-2.7.6-src.tar.gz 
-$ <span class="nb">cd</span> apache-ambari-2.7.6-src
-$ mvn versions:set -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0
-$ <span class="nb">pushd</span> ambari-metrics
-$ mvn versions:set -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0
-$ <span class="nb">popd</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>wget<span class="w"> </span>https://www-eu.apache.org/dist/ambari/ambari-2.7.6/apache-ambari-2.7.6-src.tar.gz<span class="w"> </span>
+$<span class="w"> </span>tar<span class="w"> </span>xfvz<span class="w"> </span>apache-ambari-2.7.6-src.tar.gz<span class="w"> </span>
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>apache-ambari-2.7.6-src
+$<span class="w"> </span>mvn<span class="w"> </span>versions:set<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0
+$<span class="w"> </span><span class="nb">pushd</span><span class="w"> </span>ambari-metrics
+$<span class="w"> </span>mvn<span class="w"> </span>versions:set<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0
+$<span class="w"> </span><span class="nb">popd</span>
 </code></pre></div>
 <h2>Step4: Building Source on RHEL (CentOS 7) &amp; SUSE (SLES 12 SP2 &amp; SP3):</h2>
 <p>通过以下几条命令进行编译，注意不同参数的使用</p>
@@ -137,28 +137,28 @@ $ <span class="nb">popd</span>
 <li>-X # 显示编译过程上的详细信息</li>
 <li>-rf :ambari-metrics-timelineservice # 指定从ambari-metrics-timelineservice开始编译，之前编译完成的保留</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ mvn -B clean install rpm:rpm -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>clean<span class="w"> </span>install<span class="w"> </span>rpm:rpm<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span>
 或
-$ mvn -B clean install rpm:rpm -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span> -Drat.skip<span class="o">=</span><span class="nb">true</span> -X
+$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>clean<span class="w"> </span>install<span class="w"> </span>rpm:rpm<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span><span class="w"> </span>-Drat.skip<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-X
 或
-$ mvn -B install rpm:rpm -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span> -Drat.skip<span class="o">=</span><span class="nb">true</span> -X
+$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>install<span class="w"> </span>rpm:rpm<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span><span class="w"> </span>-Drat.skip<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-X
 
 <span class="c1"># 编译中断后，再次编译</span>
-$ mvn -B install rpm:rpm -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span> -Drat.skip<span class="o">=</span><span class="nb">true</span> -rf :ambari-metrics-timelineservice
+$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>install<span class="w"> </span>rpm:rpm<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span><span class="w"> </span>-Drat.skip<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-rf<span class="w"> </span>:ambari-metrics-timelineservice
 或
-$ mvn -B install rpm:rpm -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span> -Drat.skip<span class="o">=</span><span class="nb">true</span> -rf :ambari-metrics-grafana
+$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>install<span class="w"> </span>rpm:rpm<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span><span class="w"> </span>-Drat.skip<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-rf<span class="w"> </span>:ambari-metrics-grafana
 
 <span class="c1"># 如Maven的mirros做了切换，每次切换镜像要先执行以下，清除文件； 另外，每次编译，先删除以下文件，再重新编译   </span>
-$ find ~/.m2/repository/ -name <span class="s2">"*.lastUpdated"</span> -exec rm -rf <span class="o">{}</span> <span class="se">\;</span> <span class="c1"># 清理lastUpdated文件</span>
-$ find ~/.m2/repository/ -name <span class="s2">"*.lock"</span> -exec rm -rf <span class="o">{}</span> <span class="se">\;</span>        <span class="c1"># # 清理lock文件</span>
+$<span class="w"> </span>find<span class="w"> </span>~/.m2/repository/<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.lastUpdated"</span><span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span><span class="c1"># 清理lastUpdated文件</span>
+$<span class="w"> </span>find<span class="w"> </span>~/.m2/repository/<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.lock"</span><span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w">        </span><span class="c1"># # 清理lock文件</span>
 </code></pre></div>
 <p>Building on Debian， 以下是Debian系统中的编译命令，仅文件格式不同； </p>
-<div class="highlight"><pre><span></span><code>$ mvn -B install jdeb:jdeb -DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0 -DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8 -DskipTests -Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span> -Drat.skip<span class="o">=</span><span class="nb">true</span> -X
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mvn<span class="w"> </span>-B<span class="w"> </span>install<span class="w"> </span>jdeb:jdeb<span class="w"> </span>-DnewVersion<span class="o">=</span><span class="m">2</span>.7.6.0.0<span class="w"> </span>-DbuildNumber<span class="o">=</span>388e072381e71c7755673b7743531c03a4d61be8<span class="w"> </span>-DskipTests<span class="w"> </span>-Dpython.ver<span class="o">=</span><span class="s2">"python &gt;= 2.6"</span><span class="w"> </span>-Drat.skip<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-X
 </code></pre></div>
 <h1>Step5: Fix Error and Rebuild</h1>
 <p>编译过程中会出现以下问题，处理后重新编译</p>
 <p>可用以下命令，检查依赖关系：</p>
-<div class="highlight"><pre><span></span><code>$ mvn dependency:resolve
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mvn<span class="w"> </span>dependency:resolve
 </code></pre></div>
 <h5>Error:</h5>
 <div class="highlight"><pre><span></span><code>Failed to execute goal com.github.eirslett:frontend-maven-plugin:1.4:yarn (yarn install) on project am          bari-admin: Failed to run task: 'yarn install --ignore-engines --pure-lockfile' failed. org.apache.commons.exe          c.ExecuteException: Process exited with an error: 1 
@@ -173,20 +173,20 @@ $ find ~/.m2/repository/ -name <span class="s2">"*.lock"</span> -exec rm -rf <sp
 <li>Licence Checking问题， 编译中增加 -Drat.skip=true 参数 ，跳过licensing 检查</li>
 </ul>
 <p>Error：</p>
-<div class="highlight"><pre><span></span><code><span class="n">Download</span><span class="w"> </span><span class="n">Ambari</span><span class="w"> </span><span class="nl">Grafana</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="nl">Getting</span><span class="p">:</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="p">.</span><span class="n">grafana</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">oss</span><span class="o">/</span><span class="k">release</span><span class="o">/</span><span class="n">grafana</span><span class="o">-</span><span class="mf">6.7.4</span><span class="p">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="p">.</span><span class="n">tar</span><span class="p">.</span><span class="n">gz</span><span class="w"></span>
-<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="k">To</span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span><span class="w"></span>
-<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="ow">Not</span><span class="w"> </span><span class="n">modified</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">downloaded</span><span class="w"></span>
-<span class="w">    </span><span class="o">[</span><span class="n">untar</span><span class="o">]</span><span class="w"> </span><span class="nl">Expanding</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="n">Download</span><span class="w"> </span><span class="n">Ambari</span><span class="w"> </span><span class="nl">Grafana</span><span class="p">:</span>
+<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="nl">Getting</span><span class="p">:</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="p">.</span><span class="n">grafana</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">oss</span><span class="o">/</span><span class="k">release</span><span class="o">/</span><span class="n">grafana</span><span class="o">-</span><span class="mf">6.7.4</span><span class="p">.</span><span class="n">linux</span><span class="o">-</span><span class="n">amd64</span><span class="p">.</span><span class="n">tar</span><span class="p">.</span><span class="n">gz</span>
+<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="k">To</span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span>
+<span class="w">      </span><span class="o">[</span><span class="n">get</span><span class="o">]</span><span class="w"> </span><span class="ow">Not</span><span class="w"> </span><span class="n">modified</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">downloaded</span>
+<span class="w">    </span><span class="o">[</span><span class="n">untar</span><span class="o">]</span><span class="w"> </span><span class="nl">Expanding</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span>
 </code></pre></div>
 <ul>
 <li>网络问题，可手机下载对应的工具包，保存在对应的位置； 可调整网络，重新编译</li>
 </ul>
 <h5>Error:</h5>
-<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">Failed</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">execute</span><span class="w"> </span><span class="n">goal</span><span class="w"> </span><span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">maven</span><span class="p">.</span><span class="nl">plugins</span><span class="p">:</span><span class="n">maven</span><span class="o">-</span><span class="n">antrun</span><span class="o">-</span><span class="nl">plugin</span><span class="p">:</span><span class="mf">1.7</span><span class="err">:</span><span class="n">run</span><span class="w"> </span><span class="p">(</span><span class="k">default</span><span class="p">)</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="nl">grafana</span><span class="p">:</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">Ant</span><span class="w"> </span><span class="n">BuildException</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="nl">occured</span><span class="p">:</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="n">expanding</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span><span class="w"></span>
-<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="nl">EOFException</span><span class="p">:</span><span class="w"> </span><span class="n">Unexpected</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">ZLIB</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="n">stream</span><span class="w"></span>
-<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">around</span><span class="w"> </span><span class="n">Ant</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="p">...</span><span class="o">&lt;</span><span class="n">untar</span><span class="w"> </span><span class="n">src</span><span class="o">=</span><span class="ss">"/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana/grafana.tgz"</span><span class="w"> </span><span class="n">dest</span><span class="o">=</span><span class="ss">"/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana"</span><span class="w"> </span><span class="n">compression</span><span class="o">=</span><span class="ss">"gzip"</span><span class="o">/&gt;</span><span class="p">...</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="mi">6</span><span class="err">:</span><span class="mi">231</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">antrun</span><span class="o">/</span><span class="n">build</span><span class="o">-</span><span class="n">Download</span><span class="w"> </span><span class="n">Ambari</span><span class="w"> </span><span class="n">Grafana</span><span class="p">.</span><span class="nc">xml</span><span class="w"></span>
-<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">Help 1</span><span class="o">]</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">Failed</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">execute</span><span class="w"> </span><span class="n">goal</span><span class="w"> </span><span class="n">org</span><span class="p">.</span><span class="n">apache</span><span class="p">.</span><span class="n">maven</span><span class="p">.</span><span class="nl">plugins</span><span class="p">:</span><span class="n">maven</span><span class="o">-</span><span class="n">antrun</span><span class="o">-</span><span class="nl">plugin</span><span class="p">:</span><span class="mf">1.7</span><span class="err">:</span><span class="n">run</span><span class="w"> </span><span class="p">(</span><span class="k">default</span><span class="p">)</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="nl">grafana</span><span class="p">:</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">Ant</span><span class="w"> </span><span class="n">BuildException</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="nl">occured</span><span class="p">:</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="n">expanding</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">grafana</span><span class="o">/</span><span class="n">grafana</span><span class="p">.</span><span class="n">tgz</span>
+<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">java</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="nl">EOFException</span><span class="p">:</span><span class="w"> </span><span class="n">Unexpected</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">ZLIB</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="n">stream</span>
+<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="n">around</span><span class="w"> </span><span class="n">Ant</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="p">...</span><span class="o">&lt;</span><span class="n">untar</span><span class="w"> </span><span class="n">src</span><span class="o">=</span><span class="ss">"/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana/grafana.tgz"</span><span class="w"> </span><span class="n">dest</span><span class="o">=</span><span class="ss">"/home/temp/apache-ambari-2.7.6-src/ambari-metrics/ambari-metrics-grafana/target/grafana"</span><span class="w"> </span><span class="n">compression</span><span class="o">=</span><span class="ss">"gzip"</span><span class="o">/&gt;</span><span class="p">...</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="mi">6</span><span class="err">:</span><span class="mi">231</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">temp</span><span class="o">/</span><span class="n">apache</span><span class="o">-</span><span class="n">ambari</span><span class="o">-</span><span class="mf">2.7.6</span><span class="o">-</span><span class="n">src</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">/</span><span class="n">ambari</span><span class="o">-</span><span class="n">metrics</span><span class="o">-</span><span class="n">grafana</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">antrun</span><span class="o">/</span><span class="n">build</span><span class="o">-</span><span class="n">Download</span><span class="w"> </span><span class="n">Ambari</span><span class="w"> </span><span class="n">Grafana</span><span class="p">.</span><span class="nc">xml</span>
+<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">Help 1</span><span class="o">]</span>
 </code></pre></div>
 <ul>
 <li>网络问题，重新编译</li>
@@ -223,22 +223,22 @@ $ find ~/.m2/repository/ -name <span class="s2">"*.lock"</span> -exec rm -rf <sp
 <span class="na">[INFO] ------------------------------------------------------------------------</span>
 <span class="na">[INFO] BUILD SUCCESS</span>
 <span class="na">[INFO] ------------------------------------------------------------------------</span>
-<span class="na">[INFO] Total time:  25:10 min</span>
-<span class="na">[INFO] Finished at: 2021-12-09T17:08:51Z</span>
+<span class="na">[INFO] Total time</span><span class="o">:</span><span class="w">  </span><span class="s">25:10 min</span>
+<span class="na">[INFO] Finished at</span><span class="o">:</span><span class="w"> </span><span class="s">2021-12-09T17:08:51Z</span>
 <span class="na">[INFO] ------------------------------------------------------------------------</span>
 </code></pre></div>
 <h2>Step7: Install Ambari rpm package just compiled.</h2>
 <p>编译成功，rpm文件保存以下位置：</p>
-<div class="highlight"><pre><span></span><code>$ <span class="c1"># 服务端文件</span>
-$ apache-ambari-2.7.6-src/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-2.7.6.0-0.x86_64.rpm
-$ <span class="c1"># 客户端文件</span>
-$ apache-ambari-2.7.6-src/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-2.7.6.0-0.x86_64.rpm
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="c1"># 服务端文件</span>
+$<span class="w"> </span>apache-ambari-2.7.6-src/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-2.7.6.0-0.x86_64.rpm
+$<span class="w"> </span><span class="c1"># 客户端文件</span>
+$<span class="w"> </span>apache-ambari-2.7.6-src/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-2.7.6.0-0.x86_64.rpm
 </code></pre></div>
 <p>进入服务端文件目录，安装rpm文件</p>
-<div class="highlight"><pre><span></span><code>$ yun install -y ambari-server-2.7.6.0-0.x86_64.rpm
-$ <span class="c1"># 安装完成后，查看版本信息</span>
-$ ambari-server --version
-$ <span class="m">2</span>.7.6.0-0
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>yun<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>ambari-server-2.7.6.0-0.x86_64.rpm
+$<span class="w"> </span><span class="c1"># 安装完成后，查看版本信息</span>
+$<span class="w"> </span>ambari-server<span class="w"> </span>--version
+$<span class="w"> </span><span class="m">2</span>.7.6.0-0
 </code></pre></div>
 <p>安装Mysql5.7版本，用于保存ambari设置信息</p>
 <p>添加供ambari使用的用户名、密码、数据库名等信息，开通对应权限；
@@ -248,41 +248,41 @@ set global validate_password_policy=0; # 复杂度，0为8位数字
 set global validate_password_length=4; # 默认长度，可设置为4位
 </code></pre></div>
 <p>安装ambari库文件，建立各类表</p>
-<div class="highlight"><pre><span></span><code>$ mysql&gt;source /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mysql&gt;source<span class="w"> </span>/var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
 </code></pre></div>
 <p>设置ambari-server，大部分均可选择默认项，java可按提示安装oracle版本，数据库部分选Mysql即可；</p>
-<div class="highlight"><pre><span></span><code>$ ambari-server <span class="nv">setup</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ambari-server<span class="w"> </span><span class="nv">setup</span>
 
 <span class="o">==============================================================================</span>
-Choose one of the following options:
-<span class="o">[</span><span class="m">1</span><span class="o">]</span> - PostgreSQL <span class="o">(</span>Embedded<span class="o">)</span>
-<span class="o">[</span><span class="m">2</span><span class="o">]</span> - Oracle
-<span class="o">[</span><span class="m">3</span><span class="o">]</span> - MySQL / MariaDB
-<span class="o">[</span><span class="m">4</span><span class="o">]</span> - PostgreSQL
-<span class="o">[</span><span class="m">5</span><span class="o">]</span> - Microsoft SQL Server <span class="o">(</span>Tech Preview<span class="o">)</span>
-<span class="o">[</span><span class="m">6</span><span class="o">]</span> - SQL Anywhere
-<span class="o">[</span><span class="m">7</span><span class="o">]</span> - <span class="nv">BDB</span>
+Choose<span class="w"> </span>one<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>options:
+<span class="o">[</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="o">(</span>Embedded<span class="o">)</span>
+<span class="o">[</span><span class="m">2</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Oracle
+<span class="o">[</span><span class="m">3</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>MySQL<span class="w"> </span>/<span class="w"> </span>MariaDB
+<span class="o">[</span><span class="m">4</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>PostgreSQL
+<span class="o">[</span><span class="m">5</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>Microsoft<span class="w"> </span>SQL<span class="w"> </span>Server<span class="w"> </span><span class="o">(</span>Tech<span class="w"> </span>Preview<span class="o">)</span>
+<span class="o">[</span><span class="m">6</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>SQL<span class="w"> </span>Anywhere
+<span class="o">[</span><span class="m">7</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span><span class="nv">BDB</span>
 <span class="o">==============================================================================</span>
-Enter choice <span class="o">(</span><span class="m">1</span><span class="o">)</span>: <span class="m">3</span>
-Hostname <span class="o">(</span>localhost<span class="o">)</span>: 
-Port <span class="o">(</span><span class="m">3306</span><span class="o">)</span>:
-Database name <span class="o">(</span>ambari<span class="o">)</span>:
-Username <span class="o">(</span>ambari<span class="o">)</span>:
-Enter Database Password <span class="o">(</span>bigdata<span class="o">)</span>:bigdata911 <span class="c1"># 与实际Mysql中用户名，密码一致</span>
-Configuring ambari database...
-Enter full path to custom jdbc driver:
+Enter<span class="w"> </span>choice<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="o">)</span>:<span class="w"> </span><span class="m">3</span>
+Hostname<span class="w"> </span><span class="o">(</span>localhost<span class="o">)</span>:<span class="w"> </span>
+Port<span class="w"> </span><span class="o">(</span><span class="m">3306</span><span class="o">)</span>:
+Database<span class="w"> </span>name<span class="w"> </span><span class="o">(</span>ambari<span class="o">)</span>:
+Username<span class="w"> </span><span class="o">(</span>ambari<span class="o">)</span>:
+Enter<span class="w"> </span>Database<span class="w"> </span>Password<span class="w"> </span><span class="o">(</span>bigdata<span class="o">)</span>:bigdata911<span class="w"> </span><span class="c1"># 与实际Mysql中用户名，密码一致</span>
+Configuring<span class="w"> </span>ambari<span class="w"> </span>database...
+Enter<span class="w"> </span>full<span class="w"> </span>path<span class="w"> </span>to<span class="w"> </span>custom<span class="w"> </span>jdbc<span class="w"> </span>driver:
 </code></pre></div>
 <p>启动服务端，如启动失败，可通过Log日志查看具体问题，通常为数据库问题</p>
-<div class="highlight"><pre><span></span><code>$ ambari-server start
-$ cat /var/log/ambari-server/ambari-server.log
-$ ambari-server setup --jdbc-db<span class="o">=</span>mysql--jdbc-driver<span class="o">=</span>/usr/share/java/mysql-connector-java-5.1.47.jar <span class="c1"># 设置jdbc的jar包位置</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ambari-server<span class="w"> </span>start
+$<span class="w"> </span>cat<span class="w"> </span>/var/log/ambari-server/ambari-server.log
+$<span class="w"> </span>ambari-server<span class="w"> </span>setup<span class="w"> </span>--jdbc-db<span class="o">=</span>mysql--jdbc-driver<span class="o">=</span>/usr/share/java/mysql-connector-java-5.1.47.jar<span class="w"> </span><span class="c1"># 设置jdbc的jar包位置</span>
 </code></pre></div>
 <h5>Error:</h5>
-<div class="highlight"><pre><span></span><code><span class="n">WARNING</span><span class="o">:</span> <span class="n">Before</span> <span class="n">starting</span> <span class="n">Ambari</span> <span class="n">Server</span><span class="o">,</span> <span class="n">you</span> <span class="n">must</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="n">DDL</span> <span class="n">directly</span> <span class="n">from</span> <span class="n">the</span> <span class="n">database</span> <span class="n">shell</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="n">schema</span><span class="o">:</span> 
+<div class="highlight"><pre><span></span><code><span class="n">WARNING</span><span class="o">:</span><span class="w"> </span><span class="n">Before</span><span class="w"> </span><span class="n">starting</span><span class="w"> </span><span class="n">Ambari</span><span class="w"> </span><span class="n">Server</span><span class="o">,</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">DDL</span><span class="w"> </span><span class="n">directly</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">database</span><span class="w"> </span><span class="n">shell</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">schema</span><span class="o">:</span><span class="w"> </span>
 <span class="sr">/var/lib/ambari-server/resources/</span><span class="n">Ambari</span><span class="o">-</span><span class="n">DDL</span><span class="o">-</span><span class="n">MySQL</span><span class="o">-</span><span class="n">CREATE</span><span class="o">.</span><span class="na">sql</span>
 </code></pre></div>
 <p>没建表，按指定文件建表</p>
-<div class="highlight"><pre><span></span><code>$ mysql&gt;source /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>mysql&gt;source<span class="w"> </span>/var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
 </code></pre></div>
 <h2>Step8: Finished Ambari Server Setup and Login</h2>
 <p>安装完成，通过Brower访问，默认登录用户名与密码为：admin/admin</p>
@@ -330,6 +330,9 @@ VPS：LXC CentOS7</p>
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -341,21 +344,18 @@ VPS：LXC CentOS7</p>
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -369,7 +369,7 @@ VPS：LXC CentOS7</p>
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

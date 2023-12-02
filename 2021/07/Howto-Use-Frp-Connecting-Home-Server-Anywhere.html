@@ -70,36 +70,36 @@
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
 </code></pre></div>
 <p>服务器端配置如下：</p>
-<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 
-<span class="o">[</span><span class="n">Service</span><span class="o">]</span><span class="w"></span>
+<span class="o">[</span><span class="n">Service</span><span class="o">]</span>
 
-<span class="n">Type</span><span class="o">=</span><span class="n">simple</span><span class="w"></span>
+<span class="n">Type</span><span class="o">=</span><span class="n">simple</span>
 
-<span class="o">[</span><span class="n">common</span><span class="o">]</span><span class="w"></span>
-<span class="n">bind_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端通信端口号</span><span class="w"></span>
-<span class="n">vhost_http_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8081</span><span class="w"></span>
-<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">可理解为密码</span><span class="w"></span>
+<span class="o">[</span><span class="n">common</span><span class="o">]</span>
+<span class="n">bind_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端通信端口号</span>
+<span class="n">vhost_http_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8081</span>
+<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">可理解为密码</span>
 
-<span class="n">#启动服务的命令</span><span class="err">（</span><span class="n">此处为frps的实际安装目录</span><span class="err">）</span><span class="w"></span>
+<span class="n">#启动服务的命令</span><span class="err">（</span><span class="n">此处为frps的实际安装目录</span><span class="err">）</span>
 
-<span class="err">$</span><span class="w"> </span><span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
+<span class="err">$</span><span class="w"> </span><span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 </code></pre></div>
 <p>Client端同理，按以上方式改写，客户端配置如下：</p>
-<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frpc</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frpc</span><span class="p">.</span><span class="n">ini</span>
 
-<span class="o">[</span><span class="n">common</span><span class="o">]</span><span class="w"></span>
-<span class="n">server_addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">105.113.21.123</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">服务端VPS的IP地址</span><span class="err">，</span><span class="n">请根据实际情况修改</span><span class="w"></span>
-<span class="n">server_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w">　</span><span class="err">＃</span><span class="w">　</span><span class="n">客户端与服务端通信端口号</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span><span class="w"></span>
-<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span><span class="w"></span>
+<span class="o">[</span><span class="n">common</span><span class="o">]</span>
+<span class="n">server_addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">105.113.21.123</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">服务端VPS的IP地址</span><span class="err">，</span><span class="n">请根据实际情况修改</span>
+<span class="n">server_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7000</span><span class="w">　</span><span class="err">＃</span><span class="w">　</span><span class="n">客户端与服务端通信端口号</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span>
+<span class="n">token</span><span class="o">=</span><span class="n">XXXXXXXX</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端与服务端对接授权码</span><span class="err">，</span><span class="n">与frps</span><span class="p">.</span><span class="n">ini中设置保持一致</span>
 
-<span class="o">[</span><span class="n">ssh</span><span class="o">]</span><span class="w"></span>
-<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tcp</span><span class="w"></span>
-<span class="n">local_ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">127.0.0.1</span><span class="w"></span>
-<span class="n">local_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">22</span><span class="w"></span>
-<span class="n">remote_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端接掌ssh请求的端口号</span><span class="err">，</span><span class="n">确保开启防火墙</span><span class="err">，</span><span class="n">允许使用此端口号</span><span class="w"></span>
+<span class="o">[</span><span class="n">ssh</span><span class="o">]</span>
+<span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tcp</span>
+<span class="n">local_ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">127.0.0.1</span>
+<span class="n">local_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">22</span>
+<span class="n">remote_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6000</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">客户端接掌ssh请求的端口号</span><span class="err">，</span><span class="n">确保开启防火墙</span><span class="err">，</span><span class="n">允许使用此端口号</span>
 
-<span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span><span class="w"></span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 </code></pre></div>
 <p>启动方式一：nohup</p>
 <div class="highlight"><pre><span></span><code># server startup frps:
@@ -144,8 +144,8 @@ CONTAINER ID   IMAGE                COMMAND                  CREATED        STAT
 <p>正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
 Docker方式可与普通方式共同使用，服务不受影响。</p>
 <div class="highlight"><pre><span></span><code><span class="cp"># ssh username@105.113.21.123 -p 6000</span>
-<span class="nl">ip</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">服务端</span><span class="n">VPS的IP地址</span><span class="err">，请根据实际情况修改</span><span class="w"></span>
-<span class="o">-</span><span class="nl">p</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">端口号，</span><span class="w"> </span><span class="err">客户端设置中进行设置，注意在本例中为</span><span class="mi">6000</span><span class="err">，不是</span><span class="mi">7001</span><span class="w"></span>
+<span class="nl">ip</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">服务端VPS的IP地址</span><span class="err">，</span><span class="n">请根据实际情况修改</span>
+<span class="o">-</span><span class="n">p</span><span class="o">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">端口号</span><span class="err">，</span><span class="w"> </span><span class="n">客户端设置中进行设置</span><span class="err">，</span><span class="n">注意在本例中为6000</span><span class="err">，</span><span class="n">不是7001</span>
 </code></pre></div>
 <p>Errors:</p>
 <p>远程登录时反馈错误信息如下：</p>
@@ -187,6 +187,9 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -198,21 +201,18 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -226,7 +226,7 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

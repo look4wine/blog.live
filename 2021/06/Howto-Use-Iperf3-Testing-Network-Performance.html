@@ -70,13 +70,13 @@ $ docker pull mlabbe/iperf3
 <ul>
 <li>服务端启动Iperf3 Server</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ iperf3 -s
-$ netstat -nltp <span class="p">|</span> grep <span class="m">5201</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>iperf3<span class="w"> </span>-s
+$<span class="w"> </span>netstat<span class="w"> </span>-nltp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">5201</span>
 </code></pre></div>
 <ul>
 <li>客户端发起请求，IP为服务端地址</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ iperf3 -c IP
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span>IP
 </code></pre></div>
 <ul>
 <li>TCP 下行测试</li>
@@ -86,19 +86,19 @@ $ netstat -nltp <span class="p">|</span> grep <span class="m">5201</span>
 <ul>
 <li>UDP 上行测试</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ iperf3 -c <span class="m">192</span>.168.50.167 -u -b 300M
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span><span class="m">192</span>.168.50.167<span class="w"> </span>-u<span class="w"> </span>-b<span class="w"> </span>300M
 </code></pre></div>
 <ul>
 <li>UDP 下行测试,IP替换为服务端地址</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ iperf3 -c IP -u -b 500M
-$ iperf3 -c IP -u -b 1000M
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span>IP<span class="w"> </span>-u<span class="w"> </span>-b<span class="w"> </span>500M
+$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span>IP<span class="w"> </span>-u<span class="w"> </span>-b<span class="w"> </span>1000M
 </code></pre></div>
 <ul>
 <li>网络压力测试</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ iperf3 -c -R -P <span class="m">16</span>
-$ iperf3 -c <span class="m">104</span>.243.22.130 -P <span class="m">10</span> -R -p <span class="m">5201</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span>-R<span class="w"> </span>-P<span class="w"> </span><span class="m">16</span>
+$<span class="w"> </span>iperf3<span class="w"> </span>-c<span class="w"> </span><span class="m">104</span>.243.22.130<span class="w"> </span>-P<span class="w"> </span><span class="m">10</span><span class="w"> </span>-R<span class="w"> </span>-p<span class="w"> </span><span class="m">5201</span>
 </code></pre></div>
 <p><em><a href="https://iperf.fr/iperf-download.php">多平台Iperf3工具下载</a>:</em> <a href="https://iperf.fr/iperf-download.php" target="_blank">https://iperf.fr/iperf-download.php</a></p>
 <p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
@@ -127,6 +127,9 @@ $ iperf3 -c <span class="m">104</span>.243.22.130 -P <span class="m">10</span> -
 <h1>Recent Posts</h1>
 <ul id="recent_posts">
 <li class="post">
+<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+</li>
+<li class="post">
 <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
 </li>
 <li class="post">
@@ -138,21 +141,18 @@ $ iperf3 -c <span class="m">104</span>.243.22.130 -P <span class="m">10</span> -
 <li class="post">
 <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
 </li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Digital-Advertising-App-Monetization-Key-Terms-and-Concept.html">互联网数字营销系列-广告与流量变现指标</a>
-</li>
 </ul>
 </section><section>
 <h1>Categories</h1>
 <ul id="recent_posts">
 <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (8)</a></li>
+<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
 <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
 </ul>
 </section>
 <section>
 <h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
 <section>
 <h1>Blogroll</h1>
 <ul>
@@ -166,7 +166,7 @@ $ iperf3 -c <span class="m">104</span>.243.22.130 -P <span class="m">10</span> -
 </div>
 <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2022  工长 —
+    Copyright ©  2021–2023  工长 —
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p> </footer>
 <script type="text/javascript">

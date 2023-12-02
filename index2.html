@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Tags &mdash; 自在工坊</title>
+  <title>自在工坊</title>
   <meta name="author" content="工长">
 
   
@@ -65,40 +65,34 @@
 </ul></nav>
   <div id="main">
     <div id="content">
-<div>
-	<article role="article">
-    	<header>
-    		<h1 class="entry-title">Blog Tags</h1>
-    	</header>
+<div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://www.kovlala.fun/2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Linux命令访问NAS中Samba共享文件夹</a>
+      </h1>
+    <p class="meta">
+<time datetime="2021-06-13T18:25:00+08:00" pubdate>周日 13 六月 2021</time>      
+    </p>
+</header>
 
-	<p>
-		<a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a> (2)<br>
-		<a href="https://www.kovlala.fun/tag/blog.html">Blog</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/debian.html">Debian</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/docker.html">Docker</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/frp.html">FRP</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/ga.html">GA</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/linux.html">Linux</a> (2)<br>
-		<a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a> (2)<br>
-		<a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/pve.html">PVE</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/python.html">Python</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/rsync.html">rsync</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a> (1)<br>
-		<a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a> (1)<br>
-	</p>
-	</article>
-</div>
+        <div class="entry-content"><p>NAS系统中设置好Samba共享文件夹，保存常用的资源文件；通常使用Windows系统直接访问网络共享资源，验证通过后可直接浏览文件夹。</p>
+<p>近期使用网络中一台Linux主机，需要连接Samba共享文件夹并使用其中资源，Linux系统仅提供命令行操作。</p>
+<p>经过简单几步操作，可以在本地访问远程NAS中的Samba共享文件夹及资源；记录如下，方便今后类似需求时快速查看：</p>
+<ol>
+<li>安装软件包 samclient， cifs-utils，未安装cifs无法Mount cifs目录；</li>
+</ol>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>apt-get<span class="w"> </span>update
+$<span class="w"> </span>apt-get<span class="w"> </span>install …</code></pre></div></div>
+            <footer>
+                <a rel="full-article" href="https://www.kovlala.fun/2021/06/How-to-Mount-Samba-Share-Folder-on-Linux.html">Read On &crarr;</a>
+            </footer>
+  		</article>
+<div class="pagination">
+
+    <a class="next" href="https://www.kovlala.fun/index.html">Newer &rarr;</a>
+  <br />
+</div></div>
 
 <aside class="sidebar">
 <section>
