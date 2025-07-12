@@ -1,64 +1,88 @@
 <!DOCTYPE html>
-
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
-<meta charset="utf-8"/>
-<title>使用FRP连接家中服务器 — 自在工坊</title>
-<meta content="工长" name="author"/>
-<link href="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" rel="canonical"/>
-<meta content="自在工坊" property="og:site_name">
-<meta content="article" property="og:type">
-<meta content="使用FRP连接家中服务器" property="og:title"/>
-<meta content="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" property="og:url"/>
-<meta content="如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； 普通安装方式配置文件如下： [Unit] Description=fraps service After=network.target syslog.target Wants=network.target WantedBy …" property="og:description"/>
-<meta content="2021-07-28 14:25:00+08:00" property="article:published_time"/>
-<meta content="2021-12-06 14:25:00+08:00" property="article:modified_time"/>
-<!-- http://t.co/dKP3o1e -->
-<meta content="True" name="HandheldFriendly"/>
-<meta content="320" name="MobileOptimized"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<link href="https://www.kovlala.fun/favicon.png" rel="icon"/>
-<link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection" rel="stylesheet" type="text/css"/>
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
-<script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
-<script src="https://www.kovlala.fun/theme/js/ender.js"></script>
-<script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
-<script>
+  <meta charset="utf-8">
+  <title>使用FRP连接家中服务器 &mdash; 自在工坊</title>
+  <meta name="author" content="工长">
+
+  <link rel="canonical" href="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html"/>
+  
+  <meta property="og:site_name" content="自在工坊" />
+  <meta property="og:type" content="article" />
+    
+  <meta property="og:title" content="使用FRP连接家中服务器" />
+  <meta property="og:url" content="https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" />
+  <meta property="og:description" content="如何在公司或其它地方连接家中服务器？目前常 …" />
+  <meta property="article:published_time" content="2021-07-28 14:25:00+08:00" />
+  <meta property="article:modified_time" content="2021-12-06 14:25:00+08:00" />
+
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://www.kovlala.fun/favicon.png" rel="icon">
+
+  <link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+
+  <script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
+  <script src="https://www.kovlala.fun/theme/js/ender.js"></script>
+  <script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
+  <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   
   gtag('config', 'G-D6P0W94D3K');
-  </script>
-</meta></meta><link href="https://www.kovlala.fun\2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html" rel="canonical"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "自在工坊", "item": "https://www.kovlala.fun"}, {"@type": "ListItem", "position": 2, "name": "2021", "item": "https://www.kovlala.fun\\2021"}, {"@type": "ListItem", "position": 3, "name": "07", "item": "https://www.kovlala.fun\\2021/07"}, {"@type": "ListItem", "position": 4, "name": "Howto use frp connecting home server anywhere", "item": "https://www.kovlala.fun\\2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html"}]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Person", "name": "工长"}, "publisher": {"@type": "Organization", "name": "自在工坊"}, "headline": "使用FRP连接家中服务器", "about": "Tech", "datePublished": "2021-07-28 14:25"}</script></head>
-<body>
-<header role="banner">
+  </script>  
+ 
+  
+</head>
+
+<body >
+  <header role="banner"
+  >
 <hgroup>
-<h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
-<h2>走在代码边缘</h2>
+  <h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
+    <h2>走在代码边缘</h2>
 </hgroup></header>
-<nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
 </ul>
+
+
 <ul class="main-navigation">
-<li><a href="https://www.kovlala.fun">Blog</a></li>
-<li><a href="/category/tech.html">Tech</a></li>
+    <li><a href="https://www.kovlala.fun">Blog</a></li>
+    <li><a href="/category/tech.html">Tech</a></li>
 </ul></nav>
-<div id="main">
-<div id="content">
+  <div id="main">
+    <div id="content">
 <div>
-<article class="hentry" role="article">
+  <article class="hentry" role="article">
 <header>
-<h1 class="entry-title">使用FRP连接家中服务器</h1>
-<p class="meta">
-<time datetime="2021-07-28T14:25:00+08:00" pubdate="">周三 28 七月 2021</time>
-</p>
+      <h1 class="entry-title">使用FRP连接家中服务器</h1>
+    <p class="meta">
+<time datetime="2021-07-28T14:25:00+08:00" pubdate>三 28 七月 2021</time>      
+    </p>
 </header>
-<div class="entry-content"><p>如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； </p>
+
+    <div class="entry-content"><p>如何在公司或其它地方连接家中服务器？目前常用的稳定方案比较多，其中FRP方案是比较简单且稳定的一种方式，仅需要使用一台VPS做为中转服务器，在VPS与家中服务器分别安装FRP的服务端与客户端完成通信，记录操作方式如下； </p>
 <h2>普通安装方式配置文件如下：</h2>
 <div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
 
@@ -69,6 +93,7 @@
 <span class="na">Wants</span><span class="o">=</span><span class="s">network.target</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
 </code></pre></div>
+
 <p>服务器端配置如下：</p>
 <div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 
@@ -85,6 +110,7 @@
 
 <span class="err">$</span><span class="w"> </span><span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 </code></pre></div>
+
 <p>Client端同理，按以上方式改写，客户端配置如下：</p>
 <div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">frpc</span><span class="p">.</span><span class="n">ini</span>
 
@@ -101,24 +127,27 @@
 
 <span class="n">ExecStart</span><span class="o">=/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">/</span><span class="n">yourpath</span><span class="o">/</span><span class="n">frp_0</span><span class="mf">.37.0</span><span class="n">_linux_amd64</span><span class="o">/</span><span class="n">frps</span><span class="p">.</span><span class="n">ini</span>
 </code></pre></div>
+
 <p>启动方式一：nohup</p>
-<div class="highlight"><pre><span></span><code># server startup frps:
+<div class="highlight"><pre><span></span><code><span class="gh">#</span> server startup frps:
 
 $ ./home/william/frp_0.37.0_linux_amd64/frps
 或
 $ nohup ./frps -c ./frps.ini &amp;
 
-# client startup frpc:
+<span class="gh">#</span> client startup frpc:
 $ ./frpc -c ./frpc.ini
 或
 $ nohup ./frpc -c ./frpc.ini &amp;
 
 nohup /yourpath/frp_0.37.0_linux_amd64/frpc -c /yourpath/frp_0.37.0_linux_amd64/frpc.ini &amp;
 </code></pre></div>
+
 <p>启动方式二：Debian系列中，可使用systemctl控制启动</p>
 <div class="highlight"><pre><span></span><code>debian9中:
 $ sudo vim /lib/systemd/system/frps.service
 </code></pre></div>
+
 <h2>Docker安装方式操作如下：</h2>
 <p>首先在服务器，客户端分别安装Docker，安装完成后参照以下方式部署Docker Image</p>
 <p>服务器端Docker</p>
@@ -132,8 +161,9 @@ $ sudo vim /lib/systemd/system/frps.service
 # docker ps # 查看运行状态，显示类似以下
 
 CONTAINER ID   IMAGE                COMMAND                  CREATED        STATUS PORTS  NAMES
-0ccff988564b   snowdreamtech/frps   "/bin/sh -c '/usr/bi…"   13 hours ago   Up 13 hours   frpc
+0ccff988564b   snowdreamtech/frps   &quot;/bin/sh -c &#39;/usr/bi…&quot;   13 hours ago   Up 13 hours   frpc
 </code></pre></div>
+
 <p>客户端Docker</p>
 <div class="highlight"><pre><span></span><code># docker pull snowdreamtech/frpc
 # docker run --restart=always --network host -d -v /etc/frp/frpc.ini:/etc/frp/frpc.ini --name frpc snowdreamtech/frpc
@@ -141,18 +171,21 @@ CONTAINER ID   IMAGE                COMMAND                  CREATED        STAT
 # /etc/frp/frps.ini # 为本机客户端配置文件
 # :/etc/frp/frps.ini # 为Docker实体中文件位置
 </code></pre></div>
+
 <p>正常启动后，可通过SSH方式登录验证，并根据反馈信息排查问题。
 Docker方式可与普通方式共同使用，服务不受影响。</p>
 <div class="highlight"><pre><span></span><code><span class="cp"># ssh username@105.113.21.123 -p 6000</span>
 <span class="nl">ip</span><span class="p">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">服务端VPS的IP地址</span><span class="err">，</span><span class="n">请根据实际情况修改</span>
 <span class="o">-</span><span class="n">p</span><span class="o">:</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="n">端口号</span><span class="err">，</span><span class="w"> </span><span class="n">客户端设置中进行设置</span><span class="err">，</span><span class="n">注意在本例中为6000</span><span class="err">，</span><span class="n">不是7001</span>
 </code></pre></div>
+
 <p>Errors:</p>
 <p>远程登录时反馈错误信息如下：</p>
 <div class="highlight"><pre><span></span><code>Bad ssh config on remote server. Cannot login in
 /etc/ssh/ssh_config: line 55: Bad configuration option: permitrootlogin
 /etc/ssh/ssh_config: terminating, 1 bad configuration options
 </code></pre></div>
+
 <p>To resolve this issue we have to commented out line 55 in /etc/ssh/ssh_config, which is # #PermitRootLogin yes
 服务器端ssh设置错误，屏蔽PermitRootLogin yes行,root可登录设置应在/etc/ssh/sshd_config设置中进行。 </p>
 <p>PermitRootLogin is actually an option which is valid in the /etc/ssh/sshd_config file; not the ssh_config file. The difference is that the sshd_config file controls the SSH server and the ssh_config file controls the client. Therefore, it would indeed be a bad (invalid) config option in the client settings file.</p>
@@ -161,75 +194,78 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
 - https://hub.docker.com/r/fatedier/frp
 - https://www.jianshu.com/p/1272fbbecfeb
 - https://serverfault.com/questions/785290/bad-ssh-config-on-remote-server-cannot-login-in</p>
-<p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"/></p></div>
-<footer>
+<p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"></p></div>
+    <footer>
 <p class="meta">
-<span class="byline author vcard">
+  <span class="byline author vcard">
     Posted by <span class="fn">
         工长
     </span>
-</span>
-<time datetime="2021-07-28T14:25:00+08:00" pubdate="">周三 28 七月 2021</time> <span class="categories">
-<a class="category" href="https://www.kovlala.fun/category/tech.html">Tech</a>
-</span>
-<span class="categories">
-<a class="category" href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a class="category" href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a class="category" href="https://www.kovlala.fun/tag/linux.html">Linux</a> </span>
+  </span>
+<time datetime="2021-07-28T14:25:00+08:00" pubdate>三 28 七月 2021</time>  <span class="categories">
+    <a class='category' href='https://www.kovlala.fun/category/tech.html'>Tech</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a class="category" href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a class="category" href="https://www.kovlala.fun/tag/linux.html">Linux</a>  </span>
 </p><div class="sharing">
-</div> </footer>
-</article>
-<section>
-<h1>Comments</h1>
-<div aria-live="polite" id="disqus_thread"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
-</section>
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
 </div>
+
 <aside class="sidebar">
 <section>
-<h1>Recent Posts</h1>
-<ul id="recent_posts">
-<li class="post">
-<a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
-</li>
-<li class="post">
-<a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
-</li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
-</li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
-</li>
-<li class="post">
-<a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
-</li>
-</ul>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    <li class="post">
+        <a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
+    </li>
+  </ul>
 </section><section>
-<h1>Categories</h1>
-<ul id="recent_posts">
-<li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
-<li><a href="https://www.kovlala.fun/category/tech.html">Tech (9)</a></li>
-<li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
-</ul>
+  <h1>Categories</h1>
+    <ul id="recent_posts">
+      <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
+      <li><a href="https://www.kovlala.fun/category/tech.html">Tech (10)</a></li>
+      <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
+  </ul>
 </section>
 <section>
-<h1>Tags</h1>
-<a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
-<section>
-<h1>Blogroll</h1>
-<ul>
-<li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
-<li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
-<li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
-</ul>
-</section>
+  <h1>Tags</h1>
+    <a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/fsck.html">Fsck</a>,    <a href="https://www.kovlala.fun/tag/ci-pan-qing-li.html">磁盘清理</a>,    <a href="https://www.kovlala.fun/tag/command-line.html">Command-Line</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
+            <li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
+        </ul>
+    </section>
+
 </aside>
-</div>
-</div>
-<footer role="contentinfo">
+    </div>
+  </div>
+  <footer role="contentinfo">
 <p>
-    Copyright ©  2021–2023  工长 —
+    Copyright &copy;  2021&ndash;2023  工长 &mdash;
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
-</p> </footer>
-<script type="text/javascript">
+</p>  </footer>
+    <script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'G-D6P0W94D3K']);
     _gaq.push(['_trackPageview']);
@@ -247,7 +283,7 @@ Docker方式可与普通方式共同使用，服务不受影响。</p>
     ga('create', 'G-D6P0W94D3K');
     ga('send', 'pageview');
 </script>
-<script type="text/javascript">
+  <script type="text/javascript">
     var disqus_shortname = 'kovlala';
           var disqus_identifier = '/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html';
     var disqus_url = 'https://www.kovlala.fun/2021/07/Howto-Use-Frp-Connecting-Home-Server-Anywhere.html';

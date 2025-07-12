@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Linux命令-FSCK磁盘修复 &mdash; 自在工坊</title>
+  <meta name="author" content="工长">
+
+  <link rel="canonical" href="https://www.kovlala.fun/2021/07/Howto-Use-Fsck-Fix-Disk-or-File-System.html"/>
+  
+  <meta property="og:site_name" content="自在工坊" />
+  <meta property="og:type" content="article" />
+    
+  <meta property="og:title" content="Linux命令-FSCK磁盘修复" />
+  <meta property="og:url" content="https://www.kovlala.fun/2021/07/Howto-Use-Fsck-Fix-Disk-or-File-System.html" />
+  <meta property="og:description" content="Debian服务器磁盘有问题，fsck/e2fsck是Linux常用的命令行文 …" />
+  <meta property="article:published_time" content="2021-07-12 14:25:00+08:00" />
+  <meta property="article:modified_time" content="2021-07-15 19:30:00+08:00" />
+
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://www.kovlala.fun/favicon.png" rel="icon">
+
+  <link href="https://www.kovlala.fun/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+
+  <script src="https://www.kovlala.fun/theme/js/modernizr-2.0.js"></script>
+  <script src="https://www.kovlala.fun/theme/js/ender.js"></script>
+  <script src="https://www.kovlala.fun/theme/js/octopress.js" type="text/javascript"></script>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D6P0W94D3K"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  gtag('config', 'G-D6P0W94D3K');
+  </script>  
+ 
+  
+</head>
+
+<body >
+  <header role="banner"
+  >
+<hgroup>
+  <h1><a href="https://www.kovlala.fun/">自在工坊</a></h1>
+    <h2>走在代码边缘</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+</ul>
+
+
+<ul class="main-navigation">
+    <li><a href="https://www.kovlala.fun">Blog</a></li>
+    <li><a href="/category/tech.html">Tech</a></li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Linux命令-FSCK磁盘修复</h1>
+    <p class="meta">
+<time datetime="2021-07-12T14:25:00+08:00" pubdate>一 12 七月 2021</time>      
+    </p>
+</header>
+
+    <div class="entry-content"><p>Debian服务器磁盘有问题，fsck/e2fsck是Linux常用的命令行文件系统修复工具，使用以上工具尝试修复，记录下操作过程； </p>
+<p>首页，要Umount文件系统</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>umount<span class="w"> </span>/dev/sdc1
+</code></pre></div>
+
+<p>-p option为自动修复选项，无需人工干预</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>fsck<span class="w"> </span>-p<span class="w"> </span>/dev/sdc1
+
+Repair<span class="w"> </span>Root<span class="w"> </span>file<span class="w"> </span>system
+
+fsck<span class="w"> </span>cannot<span class="w"> </span>check<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>file<span class="w"> </span>system<span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>running<span class="w"> </span>machine<span class="w"> </span>because<span class="w"> </span>it<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>unmounted.
+
+If<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>or<span class="w"> </span>repair<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>file<span class="w"> </span>system,<span class="w"> </span>you<span class="w"> </span>have<span class="w"> </span>several<span class="w"> </span>options<span class="w"> </span>at<span class="w"> </span>your<span class="w"> </span>disposal.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span><span class="nb">set</span><span class="w"> </span>the<span class="w"> </span>fsck<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>on<span class="w"> </span>boot,<span class="w"> </span>boot<span class="w"> </span>the<span class="w"> </span>system<span class="w"> </span><span class="k">in</span><span class="w"> </span>recovery<span class="w"> </span>mode,<span class="w"> </span>or<span class="w"> </span>use<span class="w"> </span>a<span class="w"> </span>live<span class="w"> </span>CD.
+
+To<span class="w"> </span>run<span class="w"> </span>fsck<span class="w"> </span><span class="k">in</span><span class="w"> </span>recovery<span class="w"> </span>mode:
+
+Enter<span class="w"> </span>the<span class="w"> </span>boot<span class="w"> </span>menu<span class="w"> </span>and<span class="w"> </span>choose<span class="w"> </span>Advanced<span class="w"> </span>Options
+Select<span class="w"> </span>the<span class="w"> </span>Recovery<span class="w"> </span>mode<span class="w"> </span>and<span class="w"> </span><span class="k">then</span><span class="w"> </span>“fsck”.
+When<span class="w"> </span>prompted<span class="w"> </span>to<span class="w"> </span>remount<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>file<span class="w"> </span>system<span class="w"> </span>choose<span class="w"> </span>“Yes”.
+Once<span class="w"> </span><span class="k">done</span>,<span class="w"> </span>resume<span class="w"> </span>the<span class="w"> </span>normal<span class="w"> </span>boot.
+To<span class="w"> </span>run<span class="w"> </span>fsck<span class="w"> </span>from<span class="w"> </span>a<span class="w"> </span>live<span class="w"> </span>distribution:
+
+Boot<span class="w"> </span>the<span class="w"> </span>live<span class="w"> </span>distribution.
+
+Use<span class="w"> </span>fdisk<span class="w"> </span>or<span class="w"> </span>parted<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>partition<span class="w"> </span>name.
+
+Open<span class="w"> </span>the<span class="w"> </span>terminal<span class="w"> </span>and<span class="w"> </span>run:
+
+sudo<span class="w"> </span>fsck<span class="w"> </span>-p<span class="w"> </span>/dev/sda1
+Copy
+Once<span class="w"> </span><span class="k">done</span>,<span class="w"> </span>reboot<span class="w"> </span>the<span class="w"> </span>live<span class="w"> </span>distribution<span class="w"> </span>and<span class="w"> </span>boot<span class="w"> </span>your<span class="w"> </span>system.
+
+Check<span class="w"> </span>File<span class="w"> </span>Systems<span class="w"> </span>on<span class="w"> </span>Boot
+On<span class="w"> </span>most<span class="w"> </span>Linux<span class="w"> </span>distributions,<span class="w"> </span>fsck<span class="w"> </span>runs<span class="w"> </span>at<span class="w"> </span>boot<span class="w"> </span><span class="nb">time</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>a<span class="w"> </span>file<span class="w"> </span>system<span class="w"> </span>is<span class="w"> </span>marked<span class="w"> </span>as<span class="w"> </span>dirty<span class="w"> </span>or<span class="w"> </span>after<span class="w"> </span>a<span class="w"> </span>certain<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>boots<span class="w"> </span>or<span class="w"> </span>time.
+
+To<span class="w"> </span>see<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>mount<span class="w"> </span>count,<span class="w"> </span>check<span class="w"> </span>frequency<span class="w"> </span>number,<span class="w"> </span>check<span class="w"> </span>interval,<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span><span class="nb">time</span><span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>check<span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>specific<span class="w"> </span>partition,<span class="w"> </span>use<span class="w"> </span>the<span class="w"> </span>tune2fs<span class="w"> </span>tool:
+
+
+
+sudo<span class="w"> </span>tune2fs<span class="w"> </span>-l<span class="w"> </span>/dev/sdc1<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;last checked\|mount count&#39;</span>
+Copy
+Mount<span class="w"> </span>count:<span class="w">              </span><span class="m">292</span>
+Maximum<span class="w"> </span>mount<span class="w"> </span>count:<span class="w">      </span>-1
+Last<span class="w"> </span>checked:<span class="w">             </span>Tue<span class="w"> </span>Jul<span class="w"> </span><span class="m">24</span><span class="w"> </span><span class="m">11</span>:10:07<span class="w"> </span><span class="m">2018</span>
+Check<span class="w"> </span>interval:<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>&lt;none&gt;<span class="o">)</span>
+Copy
+“Maximum<span class="w"> </span>mount<span class="w"> </span>count”<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>mounts<span class="w"> </span>after<span class="w"> </span>which<span class="w"> </span>the<span class="w"> </span>filesystem<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>checked.<span class="w"> </span>The<span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span><span class="m">0</span><span class="w"> </span>or<span class="w"> </span>-1<span class="w"> </span>means<span class="w"> </span>that<span class="w"> </span>fsck<span class="w"> </span>will<span class="w"> </span>never<span class="w"> </span>run.
+“Check<span class="w"> </span>interval”<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>maximal<span class="w"> </span><span class="nb">time</span><span class="w"> </span>between<span class="w"> </span>two<span class="w"> </span>filesystem<span class="w"> </span>checks.
+If<span class="w"> </span><span class="k">for</span><span class="w"> </span>example,<span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>fsck<span class="w"> </span>after<span class="w"> </span>every<span class="w"> </span><span class="m">25</span><span class="w"> </span>boots<span class="w"> </span><span class="o">(</span>mounts<span class="o">)</span>,<span class="w"> </span>type:
+
+sudo<span class="w"> </span>tune2fs<span class="w"> </span>-c<span class="w"> </span><span class="m">25</span><span class="w"> </span>/dev/sdc1
+Copy
+You<span class="w"> </span>can<span class="w"> </span>also<span class="w"> </span><span class="nb">set</span><span class="w"> </span>the<span class="w"> </span>maximal<span class="w"> </span><span class="nb">time</span><span class="w"> </span>between<span class="w"> </span>two<span class="w"> </span>checks.<span class="w"> </span>For<span class="w"> </span>example,<span class="w"> </span>to<span class="w"> </span><span class="nb">set</span><span class="w"> </span>it<span class="w"> </span>one<span class="w"> </span>month<span class="w"> </span>you<span class="w"> </span>would<span class="w"> </span>run:
+
+sudo<span class="w"> </span>tune2fs<span class="w"> </span>-i<span class="w"> </span>1m<span class="w"> </span>/dev/sdc1
+Copy
+To<span class="w"> </span>force<span class="w"> </span>fsck<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>at<span class="w"> </span>boot<span class="w"> </span><span class="nb">time</span><span class="w"> </span>on<span class="w"> </span>SystemD<span class="w"> </span>distributions<span class="w"> </span>pass<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>kernel<span class="w"> </span>boot<span class="w"> </span>parameters:
+
+fsck.mode<span class="o">=</span>force
+fsck.repair<span class="o">=</span>yes
+Copy
+On<span class="w"> </span>older<span class="w"> </span>distributions<span class="w"> </span>fsck<span class="w"> </span>will<span class="w"> </span>run<span class="w"> </span>on<span class="w"> </span>boot<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>/forcefsck<span class="w"> </span>file<span class="w"> </span>is<span class="w"> </span>present:
+
+sudo<span class="w"> </span>touch<span class="w"> </span>/forcefsck
+</code></pre></div>
+
+<p>Links:
+- https://linuxize.com/post/fsck-command-in-linux/
+- https://www.smartmontools.org/wiki/BadBlockHowto</p>
+<p><img alt="Pelican Image" src="../images/pelican1.jpg"></p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        工长
+    </span>
+  </span>
+<time datetime="2021-07-12T14:25:00+08:00" pubdate>一 12 七月 2021</time>  <span class="categories">
+    <a class='category' href='https://www.kovlala.fun/category/tech.html'>Tech</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://www.kovlala.fun/tag/fsck.html">Fsck</a>,    <a class="category" href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a class="category" href="https://www.kovlala.fun/tag/ci-pan-qing-li.html">磁盘清理</a>,    <a class="category" href="https://www.kovlala.fun/tag/command-line.html">Command-Line</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+
+<aside class="sidebar">
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    <li class="post">
+        <a href="https://www.kovlala.fun/2023/11/Howto-Setup-OpenWrt-in-Docker.html">Docker下部署OpenWrt操作记录</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2022/03/howto-setup-hadoop-cluster-on-linux-centos79-server.html">Howto Setup Hadoop Cluster on Linux CentOS7.9 Server</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/12/Howto-Build-And-Install-Ambari-2.7.3-Source-Code-on-CentOS7.html">Apache Ambari 2.7.6 源码编译安装记录</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/08/Howto-use-google-analytics-with-Python-Pelican.html">Getting Google Analytics Working with Pelican</a>
+    </li>
+    <li class="post">
+        <a href="https://www.kovlala.fun/2021/08/Howto-setup-blog-with-Python-Pelican-and-Github.html">Python Pelican与Github组合，建立超简单的个人博客平台</a>
+    </li>
+  </ul>
+</section><section>
+  <h1>Categories</h1>
+    <ul id="recent_posts">
+      <li><a href="https://www.kovlala.fun/category/03.html">03 (1)</a></li>
+      <li><a href="https://www.kovlala.fun/category/tech.html">Tech (10)</a></li>
+      <li><a href="https://www.kovlala.fun/category/techdigital-advertisingmonetization.html">Tech,Digital, Advertising,Monetization (1)</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Tags</h1>
+    <a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/fsck.html">Fsck</a>,    <a href="https://www.kovlala.fun/tag/ci-pan-qing-li.html">磁盘清理</a>,    <a href="https://www.kovlala.fun/tag/command-line.html">Command-Line</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="https://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="https://www.python.org/" target="_blank">Python.org</a></li>
+            <li><a href="https://palletsprojects.com/p/jinja/" target="_blank">Jinja2</a></li>
+        </ul>
+    </section>
+
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo">
+<p>
+    Copyright &copy;  2021&ndash;2023  工长 &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p>  </footer>
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'G-D6P0W94D3K']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'G-D6P0W94D3K');
+    ga('send', 'pageview');
+</script>
+  <script type="text/javascript">
+    var disqus_shortname = 'kovlala';
+          var disqus_identifier = '/2021/07/Howto-Use-Fsck-Fix-Disk-or-File-System.html';
+    var disqus_url = 'https://www.kovlala.fun/2021/07/Howto-Use-Fsck-Fix-Disk-or-File-System.html';
+    var disqus_title = 'Linux命令-FSCK磁盘修复';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>
