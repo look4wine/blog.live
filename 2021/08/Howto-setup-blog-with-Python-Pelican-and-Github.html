@@ -85,19 +85,23 @@
 
     <div class="entry-content"><p>Pelican Blog工具特点，静态页面生成速度快，维护简单；
 下载最新版 Pelican <a href="https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip" target="_blank">https://github.com/getpelican/pelican-themes/archive/refs/heads/master.zip</a>. 另外本地应预先安装好Python3.0以上版本，支持Pelican运行； 
-安装方式参见文档：<a href="https://docs.getpelican.com/en/latest/" target="_blank">https://docs.getpelican.com/en/latest/</a>. </p>
-<h2>Pelican简单设置</h2>
-<p>Article与Page区别
-Article：Blog内容，指具体写五Blog文章内容
+可通过命令行方式指定版本安装，详细的安装与启动方式参见文档：<a href="https://docs.getpelican.com/en/latest/" target="_blank">https://docs.getpelican.com/en/latest/</a>. </p>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">pelican</span><span class="o">[</span><span class="n">markdown</span><span class="o">]==</span><span class="mf">4.6.0</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">pypi</span><span class="p">.</span><span class="n">tuna</span><span class="p">.</span><span class="n">tsinghua</span><span class="p">.</span><span class="n">edu</span><span class="p">.</span><span class="n">cn</span><span class="o">/</span><span class="n">simple</span><span class="w"> </span>
+
+<span class="n">python3</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="ss">&quot;pelican[markdown]==4.6.0&quot;</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span>
+</code></pre></div>
+
+<h3>Pelican简单设置</h3>
+<h4>Article与Page区别</h4>
+<p>Article：Blog内容，指具体写五Blog文章内容
 Page：通常指固定不变的内容页面，比较个人说明内容； 
-`
-元数据：
-指用于定义博客，进行搜索引擎优化的设置，如Blog的基本信息。
-可用Markdown语言来编辑Blog内容，格式如下：
-多个标签或作者，可以用逗号做分割
-多个作者使用authers 
-仅一个作者使用auther
-modified值是最后编辑文章的时间，默认和date相同。可以通过modified进行RSS推送，可在刚写文章的时候RSS已经推送了一遍，后来进行了修改，就可以通过modified进行再次推送。</p>
+`</p>
+<h4>元数据：</h4>
+<p>指用于定义博客，进行搜索引擎优化的设置，如Blog的基本信息，可用Markdown语言来编辑Blog内容，格式如下：
+- 多个标签或作者，可以用逗号做分割
+- 多个作者使用authers 
+- 仅一个作者使用auther
+- modified值是最后编辑文章的时间，默认和date相同。可以通过modified进行RSS推送，可在刚写文章的时候RSS已经推送了一遍，后来进行了修改，就可以通过modified进行再次推送。</p>
 <div class="highlight"><pre><span></span><code><span class="n">Title</span><span class="o">:</span><span class="w"> </span>
 <span class="n">Date</span><span class="o">:</span><span class="w"> </span><span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">25</span>
 <span class="n">Modified</span><span class="o">:</span><span class="w"> </span><span class="mi">2021</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">19</span><span class="o">:</span><span class="mi">30</span>
@@ -109,8 +113,8 @@ modified值是最后编辑文章的时间，默认和date相同。可以通过mo
 <span class="n">Blog的Article页面内容部分</span>
 </code></pre></div>
 
-<p>页面
-在content下面创建了目录pages，该目录下所有的文件都将被生成静态页面，比如About和Contact页面。</p>
+<h4>页面</h4>
+<p>在content下面创建了目录pages，该目录下所有的文件都将被生成静态页面，比如About和Contact页面。</p>
 <p>可以通过设置DISPLAY_PAGES_ON_MENU来控制页面是否在导航栏显示，默认情况是True</p>
 <p>如果希望页面不在导航条上显示，可以在页面的元数据里面添加：status: hidden属性，例如对于404页面设置为不可见，因为404静态页面通常是不希望在导航条上面显示的。</p>
 <p>引用内部Article的链接
@@ -129,8 +133,8 @@ markdonw格式下样例如下：
 <div class="highlight"><pre><span></span><code>STATIC_PATHS = [&#39;images&#39;, &#39;pdfs&#39;]
 </code></pre></div>
 
-<p>发布草稿
-对部分Article希望作为草稿先发布出来看下效果，不让Article在首页和分类列表里面显示出来，可以在文章中添加Status: draft属性。修改文章的配置为Status: published将文章正式发布出来。</p>
+<h4>发布草稿</h4>
+<p>对部分Article希望作为草稿先发布出来看下效果，不让Article在首页和分类列表里面显示出来，可以在文章中添加Status: draft属性。修改文章的配置为Status: published将文章正式发布出来。</p>
 <p>如果将所有刚写好的文章都作为草搞件发布的话，可以在配置文件中配置DEFAULT_METADATA
 属性</p>
 <div class="highlight"><pre><span></span><code>DEFAULT_METADATA = {
@@ -139,10 +143,146 @@ markdonw格式下样例如下：
 </code></pre></div>
 
 <p>文章在发布的时候默认均为草稿，通过修改文章的配置为Status: published将文章正式发布。</p>
-<h2>Pelican Blog 内容自动发布Github</h2>
+<h4>本地启动</h4>
+<div class="highlight"><pre><span></span><code>pelican -l 
+</code></pre></div>
+
+<h4>配置文件</h4>
+<p>pelicanconf.py是在pelican主目录下的配置文件，可以通过修改配置文件的方式，调整Blog的设置常用配置如下所示。 </p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*- #</span>
+<span class="n">AUTHOR</span> <span class="o">=</span> <span class="s1">&#39;工长&#39;</span>
+<span class="n">SITENAME</span> <span class="o">=</span> <span class="s1">&#39;自在工坊&#39;</span>
+<span class="n">SITESUBTITLE</span><span class="o">=</span><span class="s1">&#39;走在代码边缘&#39;</span>
+<span class="c1">#--- development stage ----------------</span>
+<span class="c1"># SITEURL = &#39;http://localhost:8000&#39;</span>
+<span class="c1"># LOAD_CONTENT_CACHE = False</span>
+<span class="c1"># Uncomment following line if you want document-relative URLs when developing</span>
+<span class="c1"># RELATIVE_URLS = True</span>
+<span class="c1">#------ production stage ------------------</span>
+
+<span class="n">SITEURL</span> <span class="o">=</span> <span class="s1">&#39;https://www.kovlala.fun&#39;</span>
+<span class="n">RELATIVE_URLS</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">TIMEZONE</span> <span class="o">=</span> <span class="s1">&#39;Asia/Hong_Kong&#39;</span>
+<span class="c1"># SIDEBAR_DIGEST = &#39;运营数据分析中&#39;</span>
+<span class="n">PATH</span> <span class="o">=</span> <span class="s1">&#39;/Users/Documents/content.blog/&#39;</span>
+
+<span class="n">ARTICLE_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;blogs.live&#39;</span><span class="p">]</span>
+<span class="n">ARTICLE_SAVE_AS</span> <span class="o">=</span> <span class="s1">&#39;{date:%Y}/{date:%m}/</span><span class="si">{slug}</span><span class="s1">.html&#39;</span>
+<span class="n">ARTICLE_URL</span> <span class="o">=</span> <span class="s1">&#39;{date:%Y}/{date:%m}/</span><span class="si">{slug}</span><span class="s1">.html&#39;</span>
+
+<span class="c1"># FAVICON_FILENAME=&#39;images/Logo32x32.png&#39;</span>
+<span class="n">SUMMARY_MAX_LENGTH</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">SUMMARY_END_SUFFIX</span> <span class="o">=</span> <span class="s1">&#39;…&#39;</span>
+
+<span class="n">STATIC_PATHS</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;images&#39;</span><span class="p">,</span><span class="s1">&#39;downloads&#39;</span><span class="p">,</span><span class="s1">&#39;CNAME&#39;</span><span class="p">,</span><span class="s1">&#39;robots.txt&#39;</span><span class="p">]</span>
+<span class="n">DISPLAY_CATEGORIES_ON_MENU</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">MENUITEMS</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;Blog&#39;</span><span class="p">,</span> <span class="s1">&#39;https://www.kovlala.fun&#39;</span><span class="p">),(</span><span class="s1">&#39;Tech&#39;</span><span class="p">,</span> <span class="s1">&#39;/category/tech.html&#39;</span><span class="p">),)</span>
+
+<span class="c1">#FEED_ALL_RSS = &#39;feeds/all.rss.xml&#39;</span>
+
+<span class="n">DEFAULT_LANG</span> <span class="o">=</span> <span class="s1">&#39;zh_CN&#39;</span>
+<span class="n">BIND</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+<span class="c1">#BIND = &#39;127.0.0.1&#39;</span>
+<span class="c1"># Feed generation is usually not desired when developing</span>
+<span class="n">FEED_ALL_ATOM</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">CATEGORY_FEED_ATOM</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TRANSLATION_FEED_ATOM</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">AUTHOR_FEED_ATOM</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">AUTHOR_FEED_RSS</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Blogroll</span>
+<span class="n">LINKS</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;Pelican&#39;</span><span class="p">,</span> <span class="s1">&#39;https://getpelican.com/&#39;</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;Python.org&#39;</span><span class="p">,</span> <span class="s1">&#39;https://www.python.org/&#39;</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">&#39;Jinja2&#39;</span><span class="p">,</span> <span class="s1">&#39;https://palletsprojects.com/p/jinja/&#39;</span><span class="p">),)</span>
+
+
+<span class="c1"># Social widget</span>
+<span class="c1">#SOCIAL = ((&#39;First social link &#39;, &#39;#&#39;),</span>
+<span class="c1"># (&#39;Another social link&#39;, &#39;#&#39;),)</span>
+
+<span class="n">DEFAULT_PAGINATION</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">THEME</span> <span class="o">=</span> <span class="s1">&#39;pelican-themes/pelican-octopress&#39;</span>
+<span class="n">DISQUS_SITENAME</span> <span class="o">=</span> <span class="s1">&#39;kovlala&#39;</span>
+<span class="n">SHOW_DISQUS_COMMENT_COUNT</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># True</span>
+<span class="n">GOOGLE_ANALYTICS</span> <span class="o">=</span> <span class="s2">&quot;XXX&quot;</span>
+
+<span class="c1"># settings.py for SEO Setting: https://github.com/pelican-plugins/seo</span>
+<span class="n">SEO_REPORT</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># To enable this feature</span>
+<span class="n">SEO_ENHANCER</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># To disable this feature</span>
+<span class="n">SEO_ENHANCER_OPEN_GRAPH</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># The default value for this feature</span>
+<span class="n">SEO_ENHANCER_TWITTER_CARDS</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># The default value for this feature</span>
+</code></pre></div>
+
+<h4>主题修改</h4>
+<p>通过修改pelicanconfig.py文件中主题的目录，指定主题</p>
+<div class="highlight"><pre><span></span><code>THEME = &#39;你的主题所在目录&#39;
+例如：
+THEME = &#39;/Users/root/Documents/blog/tuxlite_tbs&#39;
+</code></pre></div>
+
+<h4>时间格式</h4>
+<div class="highlight"><pre><span></span><code>DEFAULT_DATE_FORMAT = &#39;%Y-%m-%d&#39;
+</code></pre></div>
+
+<h4>社交账号</h4>
+<div class="highlight"><pre><span></span><code>SOCIAL = ((&#39;github&#39;, &#39;https://github.com/XXX&#39;),
+          (&#39;Twitter&#39;, &#39;http://www.twitter.com/XXXX&#39;))
+</code></pre></div>
+
+<h4>评论功能</h4>
+<p>开通评论功能，可以在Disqus上申请一个站点，在pelicanconf.py中替换shortname</p>
+<div class="highlight"><pre><span></span><code>DISQUS_SITENAME = &#39;shortname&#39;
+</code></pre></div>
+
+<h4>简单的SEO</h4>
+<p>在output文件夹中建立robots.txt，允许所有爬虫，不允许爬取theme目录下的内容，不允许所有的图片,内容如下：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">User</span><span class="o">-</span><span class="nv">agent</span><span class="o">:</span><span class="w"> </span><span class="o">*</span>
+<span class="nv">Disallow</span><span class="o">:</span><span class="w"> </span><span class="o">/</span><span class="nv">theme</span><span class="o">/</span>
+<span class="nv">Disallow</span><span class="o">:</span><span class="w"> </span><span class="o">/.</span><span class="nv">gif</span><span class="p">$</span>
+<span class="nv">Disallow</span><span class="o">:</span><span class="w"> </span><span class="o">/.</span><span class="nv">png</span><span class="p">$</span>
+<span class="nv">Disallow</span><span class="o">:</span><span class="w"> </span><span class="o">/.</span><span class="nv">jpg</span><span class="p">$</span>
+</code></pre></div>
+
+<h4>Google的GA分析</h4>
+<div class="highlight"><pre><span></span><code>GOOGLE_ANALYTICS = &#39;跟踪ID&#39; #GA申请
+</code></pre></div>
+
+<h4>增添插件</h4>
+<p>git clone git://github.com/getpelican/pelican-plugins.git
+将插件文件下载到本地目标，修改pelicanconf.py文件如下</p>
+<div class="highlight"><pre><span></span><code>PLUGIN_PATH = u&quot;pelican-plugins&quot;
+PLUGINS = [&quot;sitemap&quot;]
+SITEMAP = {
+    &quot;format&quot;: &quot;xml&quot;,
+    &quot;priorities&quot;: {
+        &quot;articles&quot;: 0.7,
+        &quot;indexes&quot;: 0.5,
+        &quot;pages&quot;: 0.3,
+    },
+    &quot;changefreqs&quot;: {
+        &quot;articles&quot;: &quot;monthly&quot;,
+        &quot;indexes&quot;: &quot;daily&quot;,
+        &quot;pages&quot;: &quot;monthly&quot;,
+    }
+}
+</code></pre></div>
+
+<h4>favicon.ico</h4>
+<p>将此文件放在output的根目录下即可</p>
+<h4>添加订阅</h4>
+<p>pelican的库包含了feedgenerator， 可以用来生成Atom feeds， 即包含博客数据的xml文件，用于订阅，只需在pelicanconf.py加入；国内用订阅的习惯一般，这个功能没有实际使用过。 </p>
+<div class="highlight"><pre><span></span><code><span class="n">FEED_ALL_RSS =  &#39;feeds/all.rss.xml</span>
+</code></pre></div>
+
+<h4>其它定制化设置</h4>
+<p>独立域名，在Github后台与域名管理后台设置
+CName文件，域名管理后台设置；</p>
+<h3>Pelican Blog 内容自动发布Github</h3>
 <p>Github上发布，后续维护成本可忽略不计；个人建立的VPS中发布，如仅针对一人Blog，显然成本占用的维护精力比较大，综合考虑通过Github发布是最优选择。</p>
 <p>建立两个repo
-1 私有repo，用于保存每次新添加的源文件
+1 私有repo，用于保存每次新添加的源文件后通过Pelican生产的新Article/Post
 2 公有repo，对外提供内容的publish服务，可绑定域名对接访问；
 3 私有repo中建立Action，通过Push触发，将指定内容复制到公有repo中，完成自动发布；</p>
 <p>本机新加入或编辑Article/Post的内容后，通过使用git发布：</p>
@@ -235,11 +375,15 @@ importlib-resources       5.4.0
 pip install importlib-metadata==4.13.0
 </code></pre></div>
 
-<h2>Links:</h2>
+<h3>Links:</h3>
 <ul>
-<li><em>Ref Link:</em> <a href="https://github.com/look4wine/pelican-octopress-theme" target="_blank">https://github.com/look4wine/pelican-octopress-theme</a></li>
-<li><em>Ref Link:</em> <a href="https://github.com/getpelican/pelican" target="_blank">https://github.com/getpelican/pelican</a></li>
-<li><em>Ref Link:</em> <a href="https://github.com/getpelican/pelican-themes" target="_blank">https://github.com/getpelican/pelican-themes</a></li>
+<li><a href="https://github.com/look4wine/pelican-octopress-theme" target="_blank">https://github.com/look4wine/pelican-octopress-theme</a></li>
+<li><a href="https://github.com/getpelican/pelican-themes" target="_blank">https://github.com/getpelican/pelican-themes</a></li>
+<li><a href="https://segmentfault.com/a/1190000021815477">https://segmentfault.com/a/1190000021815477</a><br></li>
+<li><a href="https://github.com/cpina/github-action-push-to-another-repository#github-action-push-to-another-repository">https://github.com/cpina/github-action-push-to-another-repository#github-action-push-to-another-repository</a></li>
+<li><a href="https://cbrunet.net/automatic-page-publication-from-pelican-to-github-pages.html">https://cbrunet.net/automatic-page-publication-from-pelican-to-github-pages.html</a></li>
+<li>https://posts.careerengine.us/p/5e855166b01669120613281d?nav=post_newest&amp;p=5da286c3b7f3c83f5c21b7df</li>
+<li>https://cbrunet.net/automatic-page-publication-from-pelican-to-github-pages.html</li>
 </ul>
 <p><img alt="Pelican Image" src="https://www.kovlala.fun/images/pelican1.jpg"></p></div>
     <footer>
@@ -253,7 +397,7 @@ pip install importlib-metadata==4.13.0
     <a class='category' href='https://www.kovlala.fun/category/tech.html'>Tech</a>
   </span>
   <span class="categories">
-    <a class="category" href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a class="category" href="https://www.kovlala.fun/tag/blog.html">Blog</a>  </span>
+    <a class="category" href="https://www.kovlala.fun/tag/pelican.html">Pelican</a>,    <a class="category" href="https://www.kovlala.fun/tag/python.html">Python</a>  </span>
 </p><div class="sharing">
 </div>    </footer>
   </article>
@@ -294,7 +438,7 @@ pip install importlib-metadata==4.13.0
 </section>
 <section>
   <h1>Tags</h1>
-    <a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/blog.html">Blog</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/fsck.html">Fsck</a>,    <a href="https://www.kovlala.fun/tag/ci-pan-qing-li.html">磁盘清理</a>,    <a href="https://www.kovlala.fun/tag/command-line.html">Command-Line</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
+    <a href="https://www.kovlala.fun/tag/docker.html">Docker</a>,    <a href="https://www.kovlala.fun/tag/openwrt.html">OpenWRT</a>,    <a href="https://www.kovlala.fun/tag/debian.html">Debian</a>,    <a href="https://www.kovlala.fun/tag/openmediavault.html">OpenMediaVault</a>,    <a href="https://www.kovlala.fun/tag/hadoop.html">Hadoop</a>,    <a href="https://www.kovlala.fun/tag/bigdata.html">Bigdata</a>,    <a href="https://www.kovlala.fun/tag/mapreduce.html">MapReduce</a>,    <a href="https://www.kovlala.fun/tag/yarn.html">Yarn</a>,    <a href="https://www.kovlala.fun/tag/ambari.html">Ambari</a>,    <a href="https://www.kovlala.fun/tag/ga.html">GA</a>,    <a href="https://www.kovlala.fun/tag/analytics.html">Analytics</a>,    <a href="https://www.kovlala.fun/tag/pelican.html">Pelican</a>,    <a href="https://www.kovlala.fun/tag/python.html">Python</a>,    <a href="https://www.kovlala.fun/tag/frp.html">FRP</a>,    <a href="https://www.kovlala.fun/tag/fu-wu-qi.html">服务器</a>,    <a href="https://www.kovlala.fun/tag/linux.html">Linux</a>,    <a href="https://www.kovlala.fun/tag/pve.html">PVE</a>,    <a href="https://www.kovlala.fun/tag/rsync.html">rsync</a>,    <a href="https://www.kovlala.fun/tag/fsck.html">Fsck</a>,    <a href="https://www.kovlala.fun/tag/ci-pan-qing-li.html">磁盘清理</a>,    <a href="https://www.kovlala.fun/tag/command-line.html">Command-Line</a>,    <a href="https://www.kovlala.fun/tag/qemu-nbd.html">qemu-nbd</a>,    <a href="https://www.kovlala.fun/tag/qcow2.html">Qcow2</a>,    <a href="https://www.kovlala.fun/tag/ming-ling-xing.html">命令行</a>,    <a href="https://www.kovlala.fun/tag/iperf3.html">Iperf3</a>,    <a href="https://www.kovlala.fun/tag/linuxce-su.html">Linux测速</a>,    <a href="https://www.kovlala.fun/tag/sambagong-xiang.html">Samba共享</a></section>
     <section>
         <h1>Blogroll</h1>
         <ul>
